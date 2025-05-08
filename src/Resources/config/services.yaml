@@ -1,0 +1,17 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Skipman\FirefighterBundle\EventListener\:
+        resource: '../../EventListener/*'
+
+    Skipman\FirefighterBundle\EventListener\BackendAssetsListener:
+        tags:
+            - { name: 'kernel.event_listener', event: 'kernel.request' }
+
+    Skipman\FirefighterBundle\Picker\FirefighterPickerProvider:
+        tags:
+            - { name: contao.picker_provider } 
+
+    

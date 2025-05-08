@@ -1,0 +1,10 @@
+<div class="webs_element">
+    <p>
+        <strong>Die FF <?= $this->departmentName; ?> im Web:</strong>
+        <?php if (!empty($this->socialChannels)): ?>
+            <?php foreach ($this->socialChannels as $channel): ?>
+                <a href="<?= $channel['url']; ?>" class="<?= $channel['platformClass']; ?>" title="<?= $channel['linkTitle']; ?>"><?= $channel['platform']; ?></a><?php if ($channel !== end($this->socialChannels)): ?>, <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </p>
+</div>

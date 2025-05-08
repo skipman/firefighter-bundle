@@ -1,0 +1,108 @@
+<div class="layout_full firefighter block<?= $this->class; ?>" itemscope itemtype="http://schema.org/Article">
+
+  <div class="member-image">
+    <?php $this->insert('image', $this->arrData); ?>
+  </div>
+
+  <div class="details-head">
+    <div class="name">
+    <h1 itemprop="name"><?= $this->membersRankShortAbbr; ?> <?= $this->membersFirstname; ?> <?= $this->membersLastname ?></h1>
+
+    </div>
+    
+    <?php if ($this->membersSince): ?>
+      <div>
+        <p><strong>Freiwilliges Mitglied seit:</strong> <?= $this->membersSince; ?></p>
+      </div>
+    <?php endif; ?>
+
+    
+    <div class="member-rank">
+      <p><strong>Dienstgrad: </strong><span class="<?= strtolower($this->membersRankShortAbbr); ?>"><?= $this->membersRankLongAbbr; ?> (<?= $this->membersRankShortAbbr; ?>)</span></p>
+    </div>
+
+    <?php if ($this->membersPhone || $this->membersEmail): ?>
+      <div class="contact-info">
+        <?php if ($this->membersEmail): ?>
+            <p><strong>E-Mail:</strong> <a href="mailto:<?= $this->membersEmail; ?>"><?= $this->membersEmail; ?></a>
+        <?php endif; ?>
+
+        <?php if ($this->membersPhone): ?>
+            <br><strong>Telefon:</strong> <a href="<?= $this->membersPhoneFormatted; ?>"><?= $this->membersPhone; ?></a>
+        <?php endif; ?>
+        </p>
+      </div>
+    <?php endif; ?>
+
+    <?php if (!empty($this->membersFunctionLocal)): ?>  
+    <div class="functions-local">
+    <h2>
+        <?php 
+        // Check whether there is one or more functions
+        if (count($this->membersFunctionLocal) === 1) {
+          echo "Lokale Funktion"; // Singular
+        } else {
+          echo "Lokale Funktionen"; // Plural
+        }
+        ?>
+      </h2>
+      <ul>
+        <?php foreach ($this->membersFunctionLocal as $function): ?>
+            <li>
+              <?= $function['long']; ?> 
+              <?php
+              // Check that either start month or start year AND either end month or end year are set
+              if (!empty($function['LfromY'])) {
+                if (!empty($function['LuntilY'])) {
+                  // Start- und Enddatum vorhanden
+                  echo "(von " . (!empty($function['LfromM']) ? $function['LfromM'] . "/" : "") . $function['LfromY'];
+                  echo " bis " . (!empty($function['LuntilM']) ? $function['LuntilM'] . "/" : "") . $function['LuntilY'] . ")";
+                } else {
+                  // Nur Startdatum vorhanden
+                  echo "(seit " . (!empty($function['LfromM']) ? $function['LfromM'] . "/" : "") . $function['LfromY'] . ")";
+                }
+              }
+              ?>
+
+            </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($this->membersFunctionSection)): ?>
+      <div class="functions-section">
+        <h2>
+        <?php 
+        // Check whether there is one or more functions
+        if (count($this->membersFunctionSection) === 1) {
+          echo "Überörtliche Funktion"; // Singular
+        } else {
+          echo "Überörtliche Funktionen"; // Plural
+        }
+        ?>
+      </h2>
+        </h2>
+        <ul>
+          <?php foreach ($this->membersFunctionSection as $function): ?>
+            <li><?= $function['long']; ?> 
+              <?php
+                // Check that either start month or start year AND either end month or end year are set
+                if (!empty($function['SfromY'])) {
+                  if (!empty($function['SuntilY'])) {
+                    // Start- und Enddatum vorhanden
+                    echo "(von " . (!empty($function['SfromM']) ? $function['SfromM'] . "/" : "") . $function['SfromY'];
+                    echo " bis " . (!empty($function['SuntilM']) ? $function['SuntilM'] . "/" : "") . $function['SuntilY'] . ")";
+                  } else {
+                    // Nur Startdatum vorhanden
+                    echo "(seit " . (!empty($function['SfromM']) ? $function['SfromM'] . "/" : "") . $function['SfromY'] . ")";
+                  }
+                }
+              ?>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+  </div>  
+</div>

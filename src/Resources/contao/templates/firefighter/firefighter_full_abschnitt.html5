@@ -1,0 +1,66 @@
+<div class="layout_full firefighter block<?= $this->class; ?>" itemscope itemtype="http://schema.org/Article">
+
+  <div class="member-image">
+    <?php $this->insert('image', $this->arrData); ?>
+  </div>
+
+  <div class="details-head">
+    <div class="name">
+    <h1 itemprop="name"><?= $this->membersRankShortAbbr; ?> <?= $this->membersFirstname; ?> <?= $this->membersLastname ?></h1>
+    </div>
+    
+    <div class="homebase-info">
+      <?php if (!empty($this->membersHomebaseWebsite)): ?>
+        Mitglied der <a href="<?= $this->membersHomebaseWebsite ?>" target="_blank" title="Die Webseite der FF <?= $this->membersHomebase ?> in neuem Fenster öffnen">FF <?//= $this->membersHomebase ?></a>
+      <?php else: ?>
+        Mitglied der FF <?= $this->membersHomebase ?>
+      <?php endif; ?>
+    </div>
+    
+    <?php if ($this->membersSince): ?>
+      <div>
+        <p><strong>Freiwilliges Mitglied seit:</strong> <?= $this->membersSince; ?></p>
+      </div>
+    <?php endif; ?>
+
+    
+    <div class="member-rank">
+      <p><strong>Dienstgrad: </strong><span class="<?= strtolower($this->membersRankShortAbbr); ?>"><?= $this->membersRankLongAbbr; ?> (<?= $this->membersRankShortAbbr; ?>)</span></p>
+    </div>
+
+    <?php if ($this->membersPhone || $this->membersEmail): ?>
+      <div class="contact-info">
+        <?php if ($this->membersEmail): ?>
+            <p><strong>E-Mail:</strong> <a href="mailto:<?= $this->membersEmail; ?>"><?= $this->membersEmail; ?></a>
+        <?php endif; ?>
+
+        <?php if ($this->membersPhone): ?>
+            <br><strong>Telefon:</strong> <a href="<?= $this->membersPhoneFormatted; ?>"><?= $this->membersPhone; ?></a>
+        <?php endif; ?>
+        </p>
+      </div>
+    <?php endif; ?>
+
+    <?php if (!empty($this->membersFunctionLocal)): ?>  
+    <div class="functions-local">
+      <h2>Lokale Funktionen</h2>
+      <ul>
+        <?php foreach ($this->membersFunctionLocal as $function): ?>
+            <li><?= $function['long']; ?> <?php if (!empty($function['period'])): ?>(<?= $function['period']; ?>)<?php endif; ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($this->membersFunctionSection)): ?>
+      <div class="functions-section">
+        <h2>Überörtliche Funktionen</h2>
+        <ul>
+          <?php foreach ($this->membersFunctionSection as $function): ?>
+            <li><?= $function['long']; ?> <?php if (!empty($function['period'])): ?>(<?= $function['period'] ?? ''; ?>)<?php endif; ?></li>
+          <?php endforeach; ?>
+        </ul>
+      </div>
+    <?php endif; ?>
+  </div>  
+</div>

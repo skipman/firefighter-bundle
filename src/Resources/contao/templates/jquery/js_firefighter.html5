@@ -1,0 +1,9 @@
+<!-- js_firefighter -->
+<script src="bundles/firefighter/js/firefighter-filter-animation.js"></script>
+<script>
+  const firefighterfilters = document.querySelectorAll('.firefighter__filter .filter');
+  const firefighterItems = document.querySelectorAll('.firefighter__items .firefighter');
+  const firefighterduration = 500;
+
+  animateFirefighterItems(firefighterfilters, firefighterItems, firefighterduration);
+</script>

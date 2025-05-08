@@ -1,0 +1,27 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+  <?php if ($this->firefightercategories): ?>
+    <?php if ($this->firefighter_filter): ?>
+      <nav class="firefighter__filter block">
+        <ul class="level_1">
+          <?php if ($this->firefighter_filter_reset): ?>
+            <li><button class="filter active" data-category="all"><?= $this->firefighter_filter_reset ?></button></li>
+          <?php endif; ?>
+          <?php foreach ($this->firefightercategories as $category): ?>
+            <li><button class="filter" data-category="<?= $category['alias']; ?>"><?= $category['title']; ?></button></li>
+          <?php endforeach; ?>
+        </ul>
+      </nav>
+    <?php endif; ?>
+  <?php endif; ?>
+
+  <?php if (empty($this->items)): ?>
+    <p class="empty"><?= $this->empty; ?></p>
+  <?php else: ?>
+    <div class="firefighter__items">
+      <?= implode('', $this->items); ?>
+      <?= $this->pagination; ?>
+    </div>
+  <?php endif; ?>
+<?php $this->endblock(); ?>

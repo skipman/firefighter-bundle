@@ -1,0 +1,26 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/firefighter/languages/en/tl_user.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_user.firefighter.0">
+        <source>Allowed archives</source>
+        <target>Erlaubte Archive</target>
+      </trans-unit>
+      <trans-unit id="tl_user.firefighter.1">
+        <source>Here you can grant access to one or more firefighter archives.</source>
+        <target>Hier können Sie den Zugriff auf ein oder mehrere FF-Mitglieder-Archive erlauben.</target>
+      </trans-unit>
+      <trans-unit id="tl_user.firefighterp.0">
+        <source>Firefighter permissions</source>
+        <target>Archivrechte</target>
+      </trans-unit>
+      <trans-unit id="tl_user.firefighterp.1">
+        <source>Here you can define the firefighter permissions.</source>
+        <target>Hier können Sie die FF-Mitglieder-Archivrechte festlegen.</target>
+      </trans-unit>
+      <trans-unit id="tl_user.firefighter_legend">
+        <source>Firefighter permissions</source>
+        <target>FF-Mitglieder-Archivrechte</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

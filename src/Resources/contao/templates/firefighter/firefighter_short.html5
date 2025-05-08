@@ -1,0 +1,24 @@
+<div class="layout_short firefighter team-block<?= $this->class; ?>" data-category="<?= $this->firefightercategories ?>">
+  <div class="inner-box">
+    <?php if ($this->addImage): ?>
+      <?php $this->insert('image', $this->arrData); ?>
+    <?php endif; ?>
+    <div class="content_container">
+      <div class="upper_content">
+        <?php if (strlen($this->text)) : ?>
+          <span><?= $this->linkHeadline; ?></span>
+        <?php else: ?>
+          <span><?= $this->membersRankShortAbbr; ?> <?= $this->membersFirstname; ?> <?= $this->membersLastname; ?></span>
+        <?php endif; ?>
+        <?php if (!empty($this->membersFunctionLocal)): ?>
+          <p>
+            <?php foreach ($this->membersFunctionLocal as $function): ?>
+              <?= $function['short']; ?><br>
+            <?php endforeach; ?>
+          </p>
+        <?php endif; ?>
+        
+      </div>
+    </div>
+  </div>
+</div>

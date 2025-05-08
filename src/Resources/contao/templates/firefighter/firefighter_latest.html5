@@ -1,0 +1,25 @@
+<div class="layout_latest firefighter block<?= $this->class; ?>" data-category="<?= $this->firefightercategories ?>">
+  <div class="inside">
+    <?php if ($this->hasText) : ?>
+      <h2><?= $this->membersRankShortAbbr; ?> <?= $this->linkHeadline; ?></h2>
+    <?php else: ?>
+      <h2><?= $this->membersRankShortAbbr; ?> <?= $this->headline; ?></h2>
+    <?php endif; ?>
+    
+    <?php if ($this->addImage): ?>
+        <?php $this->insert('image', $this->arrData); ?>
+    <?php endif; ?>
+    <?php if ($this->membersFirstname): ?>
+        <?php $this->membersFirstname; ?>
+    <?php endif; ?>
+
+    <?php if ($this->hasTeaser): ?>
+      <div class="teaser"><?= $this->teaser; ?></div>
+    <?php endif; ?>
+
+    <?php if ($this->hasText || $this->hasTeaser): ?>
+        <?= $this->more; ?>
+    <?php endif; ?>
+
+  </div>
+</div>

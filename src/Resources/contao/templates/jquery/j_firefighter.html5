@@ -1,0 +1,39 @@
+<!-- jquery firefighter -->
+<script>
+(function($) {
+  'use strict';
+
+  var $firefighterfilters = $('.firefighter__filter [data-category]'),
+      $firefighteritems = $('.firefighter__items .firefighter');
+
+  $firefighterfilters.on('click', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+
+    $firefighterfilters.removeClass('active');
+    $this.addClass('active');
+
+    var $filterFirefighterCategory = $this.attr('data-category');
+
+    if ($filterFirefighterCategory == 'all') {
+      $firefighteritems.removeClass('is-animated')
+        .fadeOut().promise().done(function() {
+          $firefighteritems.addClass('is-animated').fadeIn();
+        });
+    } else {
+      $firefighteritems.removeClass('is-animated')
+        .fadeOut().promise().done(function() {
+
+          $firefighteritems.each(function() {
+            var categories = $(this).data('category').split(',');
+
+            if (categories.indexOf($filterFirefighterCategory) != -1) {
+              $(this).addClass('is-animated').fadeIn();
+            }
+          });
+
+        });
+    }
+  });
+})(jQuery);
+</script>
