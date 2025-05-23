@@ -144,6 +144,91 @@ class ModuleFirefighterReader extends ModuleFirefighter
             $objTemplate->membersFunctionSection = $filteredSectionFunctions;
         }
 
+        // Get the course data
+        $courses = StringUtil::deserialize($objItem->membersCoursesWizard, true);
+        $courseData = [];
+
+        if (!empty($courses)) {
+            foreach ($courses as $entry) {
+                if (!empty($entry['membersCourse'])) {
+                    $course = Database::getInstance()
+                        ->prepare("SELECT course_short, course_long FROM tl_firefighter_courses WHERE id = ?")
+                        ->execute($entry['membersCourse']);
+
+                    if ($course->numRows > 0) {
+                        $courseData[] = [
+                            'short' => $course->course_short,
+                            'long'  => $course->course_long,
+                            'year'  => $entry['membersCourseYear'] ?? '',
+                        ];
+                    }
+                }
+            }
+        }
+
+        if (!empty($courseData)) {
+            $objTemplate->membersCourses = $courseData;
+        }
+
+        // Get the badge data
+        $badges = StringUtil::deserialize($objItem->membersBadgesWizard, true);
+        $badgeData = [];
+
+        if (!empty($badges)) {
+            foreach ($badges as $entry) {
+                if (!empty($entry['membersBadge'])) {
+                    $badge = Database::getInstance()
+                        ->prepare("SELECT badge_short, badge_long FROM tl_firefighter_badges WHERE id = ?")
+                        ->execute($entry['membersBadge']);
+
+                    if ($badge->numRows > 0) {
+                        $badgeData[] = [
+                            'short' => $badge->badge_short,
+                            'long'  => $badge->badge_long,
+                            'year'  => $entry['membersBadgeYear'] ?? '',
+                        ];
+                    }
+                }
+            }
+        }
+
+        if (!empty($badgeData)) {
+            $objTemplate->membersBadges = $badgeData;
+        }
+
+        // Get the award data
+        $awards = StringUtil::deserialize($objItem->membersAwardsWizard, true);
+        $awardData = [];
+
+        if (!empty($awards)) {
+            foreach ($awards as $entry) {
+                if (!empty($entry['membersAward'])) {
+                    $award = Database::getInstance()
+                        ->prepare("SELECT award_short, award_long FROM tl_firefighter_awards WHERE id = ?")
+                        ->execute($entry['membersAward']);
+
+                    if ($award->numRows > 0) {
+                        $awardData[] = [
+                            'short' => $award->award_short,
+                            'long'  => $award->award_long,
+                            'year'  => $entry['membersAwardYear'] ?? '',
+                        ];
+                    }
+                }
+            }
+        }
+
+        if (!empty($awardData)) {
+            $objTemplate->membersAwards = $awardData;
+        }
+
+
+
+
+
+
+
+
         // Add other item data to the template
         $objTemplate->class = ('' !== $objItem->cssClass ? ' '.$objItem->cssClass : '').$strClass;
         $objTemplate->headline = $objItem->headline;

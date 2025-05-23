@@ -13,12 +13,13 @@
         <?php if (!empty($this->membersFunctionLocal)): ?>
           <p>
             <?php foreach ($this->membersFunctionLocal as $function): ?>
-              <?= $function['short']; ?><br>
+              <?= $function['short']; ?>
             <?php endforeach; ?>
           </p>
         <?php endif; ?>
         
       </div>
+      <div class="lower_content"></div>
     </div>
   </div>
 </div>

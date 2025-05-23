@@ -44,9 +44,9 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
         'oninvalidate_cache_tags_callback' => [
             ['tl_firefighter', 'addSitemapCacheInvalidationTag'],
         ],
-        'onload_callback' => [
-            ['tl_firefighter', 'checkPermission'],
-        ],
+    //    'onload_callback' => [
+    //        ['tl_firefighter', 'checkPermission'],
+    //    ],
         'sql' => [
             'keys' => [
                 'id' => 'primary',
@@ -113,6 +113,9 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                    . '{image_legend:hide},addImage;'
                    . '{ffMemberFunctionLocal_legend:hide},membersFunctionLocalWizard;'
                    . '{ffMemberFunctionSection_legend:hide},membersFunctionSectionWizard;'
+                   . '{ffMemberCourses_legend:hide},membersCoursesWizard;'
+                   . '{ffMemberBadges_legend:hide},membersBadgesWizard;'
+                   . '{ffMemberAwards_legend:hide},membersAwardsWizard;'
                    . '{ffMemberContact_legend:hide},membersEmail,membersPhone;'
                    . '{expert_legend:hide},cssClass,noComments,featured;'
                    . '{publish_legend},published,start,stop',
@@ -155,6 +158,7 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'search' => false,
             'inputType' => 'text',
             'eval' => ['rgxp' => 'alias', 'unique' => true, 'maxlength' => 128, 'tl_class' => 'w50'],
+            'save_callback' => ['tl_firefighter', 'generateAlias'],
             'sql' => "varchar(255) BINARY NOT NULL default ''",
         ],
         'membersFirstname' => [
@@ -287,9 +291,14 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                 ],
                 'tl_class' => 'clr',
                 'minCount' => 0,
+                'allowHtml' => true,
+                'ignoreEmptySubmit' => true,
             ],
-            'sql' => "blob NULL"
-        ],        
+            'sql' => "blob NULL",
+            'load_callback' => [FirefighterHelper::class, 'filterEmptyMCWrows'],
+            'save_callback' => [FirefighterHelper::class, 'sanitizeMCWrows'],
+        ],
+
         'membersFunctionSectionWizard' => [
             'exclude' => true,
             'inputType' => 'multiColumnWizard',
@@ -322,6 +331,73 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionSectionUntilYear'],
                         'inputType' => 'text',
                         'eval' => ['style' => 'width:80px', 'maxlength' => 4,]
+                    ],
+                ],
+                'tl_class' => 'clr',
+                'minCount' => 0,
+            ],
+            'sql' => "blob NULL"
+        ],
+        'membersCoursesWizard' => [
+            'exclude' => true,
+            'inputType' => 'multiColumnWizard',
+            'eval' => [
+                'columnFields' => [
+                    'membersCourse' => [
+                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersCourse'],
+                        'inputType' => 'select',
+                        'options_callback' => [FirefighterHelper::class, 'getCoursesShortOptions'],
+                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                    ],
+                    'membersCourseYear' => [
+                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersCourseYear'],
+                        'inputType' => 'text',
+                        'eval' => ['style' => 'width:50px',]
+                    ],
+                ],
+                'tl_class' => 'clr',
+                'minCount' => 0,
+                'ignoreEmptySubmit' => true,
+            ],
+            'sql' => "blob NULL"
+        ],
+        'membersBadgesWizard' => [
+            'exclude' => true,
+            'inputType' => 'multiColumnWizard',
+            'eval' => [
+                'columnFields' => [
+                    'membersBadge' => [
+                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersBadge'],
+                        'inputType' => 'select',
+                        'options_callback' => [FirefighterHelper::class, 'getBadgesShortOptions'],
+                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                    ],
+                    'membersBadgeYear' => [
+                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersBadgeYear'],
+                        'inputType' => 'text',
+                        'eval' => ['style' => 'width:50px',]
+                    ],
+                ],
+                'tl_class' => 'clr',
+                'minCount' => 0,
+            ],
+            'sql' => "blob NULL"
+        ],
+        'membersAwardsWizard' => [
+            'exclude' => true,
+            'inputType' => 'multiColumnWizard',
+            'eval' => [
+                'columnFields' => [
+                    'membersAward' => [
+                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersAward'],
+                        'inputType' => 'select',
+                        'options_callback' => [FirefighterHelper::class, 'getAwardsShortOptions'],
+                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                    ],
+                    'membersAwardYear' => [
+                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersAwardYear'],
+                        'inputType' => 'text',
+                        'eval' => ['style' => 'width:50px',]
                     ],
                 ],
                 'tl_class' => 'clr',
@@ -591,15 +667,15 @@ class tl_firefighter extends Backend
             $root = $this->User->firefighter;
         }
 
-        $id = Input::get('id');
+        $id = Input::get('id') !== '' ? Input::get('id') : CURRENT_ID;
 
         // Check current action
         switch (Input::get('act')) {
             case 'paste':
             case 'select':
                 // Check CURRENT_ID
-                if (!in_array(Input::get('id'), $root, true)) {
-                    throw new AccessDeniedException('Not enough permissions to access firefighter archive ID ' . $id . '.');
+                if (!in_array(CURRENT_ID, $root, true)) {
+                    throw new AccessDeniedException('Not enough permissions to access portfolio archive ID ' . $id . '.');
                 }
                 break;
 
@@ -664,7 +740,7 @@ class tl_firefighter extends Backend
                     ->execute($id);
 
                 /** @var SessionInterface $objSession */
-                $objSession = System::getContainer()->get('session');
+                $objSession = System::getContainer()->get('request_stack')->getSession();
 
                 $session = $objSession->all();
                 $session['CURRENT']['IDS'] = array_intersect((array)$session['CURRENT']['IDS'], $objArchive->fetchEach('id'));
@@ -740,9 +816,7 @@ class tl_firefighter extends Backend
         }
 
         return $rankHonory ? 'E' . $membersRankShortAbbr->rank_short : $membersRankShortAbbr->rank_short;
-    }
-
-    
+    }    
 
     /**
      * Auto-generate the firefighter alias if it has not been set yet.
@@ -865,7 +939,7 @@ class tl_firefighter extends Backend
      */
     public function getSerpUrl(\Skipman\FirefighterBundle\Models\FirefighterModel $model)
     {
-        return \Skipman\ContaoFirefighterBundle\Classes\Firefighter::generateFirefighterUrl($model, false, true);
+        return \Skipman\FirefighterBundle\Classes\Firefighter::generateFirefighterUrl($model, false, true);
     }
 
     /**
@@ -875,7 +949,7 @@ class tl_firefighter extends Backend
      *
      * @return string
      */
-    public function getTitleTag(\Skipman\ContaoFirefighterBundle\Models\FirefighterModel $model)
+    public function getTitleTag(\Skipman\FirefighterBundle\Models\FirefighterModel $model)
     {
         /** @var Skipman\FirefighterBundle\Models\FirefighterArchiveModel $archive */
         if (!$archive = $model->getRelated('pid')) {

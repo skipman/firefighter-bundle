@@ -205,7 +205,7 @@
          }
  
          /** @var SessionInterface $objSession */
-         $objSession = System::getContainer()->get('session');
+         System::getContainer()->get('request_stack')->getSession();
  
          // Check current action
          switch (Input::get('act')) {

@@ -6,8 +6,7 @@
 
   <div class="details-head">
     <div class="name">
-    <h1 itemprop="name"><?= $this->membersRankShortAbbr; ?> <?= $this->membersFirstname; ?> <?= $this->membersLastname ?></h1>
-
+      <h1 itemprop="name"><?= $this->membersRankShortAbbr; ?> <?= $this->membersFirstname; ?> <?= $this->membersLastname ?></h1>
     </div>
     
     <?php if ($this->membersSince): ?>
@@ -15,7 +14,6 @@
         <p><strong>Freiwilliges Mitglied seit:</strong> <?= $this->membersSince; ?></p>
       </div>
     <?php endif; ?>
-
     
     <div class="member-rank">
       <p><strong>Dienstgrad: </strong><span class="<?= strtolower($this->membersRankShortAbbr); ?>"><?= $this->membersRankLongAbbr; ?> (<?= $this->membersRankShortAbbr; ?>)</span></p>
@@ -82,7 +80,7 @@
         }
         ?>
       </h2>
-        </h2>
+        
         <ul>
           <?php foreach ($this->membersFunctionSection as $function): ?>
             <li><?= $function['long']; ?> 
@@ -104,5 +102,52 @@
         </ul>
       </div>
     <?php endif; ?>
-  </div>  
+  </div>
+
+  <div class="member-courses m-t-2">
+
+
+  <?php if (!empty($this->membersCourses)): ?>
+    <h2>Kurse / Ausbildungen</h2>
+      <ul class="firefighter-courses">
+          <?php foreach ($this->membersCourses as $course): ?>
+              <li><?= $course['long'] ?>
+                  <?php if ($course['year']): ?>
+                      (<?= $course['year'] ?>)
+                  <?php endif; ?>
+              </li>
+          <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </div>
+  <div class="members-misc m-t-2">
+
+    <?php if (!empty($this->membersBadges)): ?>
+      <h2>Leistungsabzeichen</h2>
+      <ul class="firefighter-badges">
+          <?php foreach ($this->membersBadges as $badge): ?>
+              <li><?= $badge['long'] ?>
+                  <?php if ($badge['year']): ?>
+                    (<?= $badge['year'] ?>)
+                  <?php endif; ?>
+              </li>
+          <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  
+  
+  <?php if (!empty($this->membersAwards)): ?>
+    <h2>Auszeichnungen</h2>
+    <ul class="firefighter-awards">
+        <?php foreach ($this->membersAwards as $award): ?>
+            <li><?= $award['long'] ?>
+                <?php if ($award['year']): ?>
+                  (<?= $award['year'] ?>)
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
+</div>
+
 </div>

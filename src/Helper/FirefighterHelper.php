@@ -65,6 +65,42 @@ class FirefighterHelper
         return $options;
     }
 
+    public static function getCoursesShortOptions(): array
+    {
+        $options = [];
+        $result = Database::getInstance()->execute("SELECT id, course_short FROM tl_firefighter_courses ORDER BY course_short ASC");
+
+        while ($result->next()) {
+            $options[$result->id] = $result->course_short;
+        }
+
+        return $options;
+    }
+
+    public static function getBadgesShortOptions(): array
+    {
+        $options = [];
+        $result = Database::getInstance()->execute("SELECT id, badge_short FROM tl_firefighter_badges ORDER BY badge_short ASC");
+
+        while ($result->next()) {
+            $options[$result->id] = $result->badge_short;
+        }
+
+        return $options;
+    }
+
+    public static function getAwardsShortOptions(): array
+    {
+        $options = [];
+        $result = Database::getInstance()->execute("SELECT id, award_short FROM tl_firefighter_awards ORDER BY award_short ASC");
+
+        while ($result->next()) {
+            $options[$result->id] = $result->award_short;
+        }
+
+        return $options;
+    }
+
     public static function getVehiclesByDepartment($dc)
     {
         $vehicles = [];
@@ -106,4 +142,25 @@ class FirefighterHelper
 
         return $vehicles;
     }
+
+    public static function filterEmptyMCWrows($value): array
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+        return array_filter($rows, static fn($row) => array_filter($row));
+    }
+
+    public static function sanitizeMCWrows($value): string
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        // Nur speichern, wenn mindestens EIN Feld NICHT leer ist
+        $cleaned = array_filter($rows, static function ($row) {
+            return is_array($row) && array_filter($row, static fn($val) => trim((string)$val) !== '');
+        });
+
+        return serialize(array_values($cleaned));
+    }
+
+
+
 }

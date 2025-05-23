@@ -185,8 +185,76 @@
         <source>Enter the year in 4 digits</source>
         <target>Jahreszahl 4-stellig eingeben</target>
       </trans-unit>
+      <trans-unit id="tl_firefighter.ffMemberCourses_legend">
+        <source>Courses / Training</source>
+        <target>Kurse / Ausbildungen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersCoursesWizard">
+        <source>Courses / Training</source>
+        <target>Kurse / Ausbildungen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersCourse.0">
+        <source>Course / Training</source>
+        <target>Kurs / Ausbildung</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersCourse.1">
+        <source>Select the completed course(s).</source>
+        <target>Wählen Sie den/die absolvierten Kurs(e) aus.</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersCourseYear.0">
+        <source>Year</source>
+        <target>Jahr</target>
+      </trans-unit>
 
-      
+      <trans-unit id="tl_firefighter.ffMemberBadges_legend">
+        <source>Achievement badge</source>
+        <target>Leistungsabzeichen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersBadgesWizard">
+        <source>Achievement badge</source>
+        <target>Erworbene Leistungsabzeichen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersBadge.0">
+        <source>Achievement badge</source>
+        <target>Leistungsabzeichen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersBadge.1">
+        <source>Select the achievement badge(s)</source>
+        <target>Wählen Sie das/die Leistungsabzeichen aus</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersBadgeYear.0">
+        <source>Year</source>
+        <target>Jahr</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersBadgeYear.1">
+        <source>Optional: Year in which the performance badge was acquired</source>
+        <target>Optional: Jahr in dem das Leistungsabzeichen erworben wurde</target>
+      </trans-unit>
+
+      <trans-unit id="tl_firefighter.ffMemberAwards_legend">
+        <source>Awards</source>
+        <target>Verliehene Auszeichnungen / Ehrungen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersAwardsWizard">
+        <source>Awards</source>
+        <target>Auszeichnungen / Ehrungen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersAward.0">
+        <source>Award</source>
+        <target>Auszeichnung / Ehrung</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersAward.1">
+        <source>Select the award(s)</source>
+        <target>Wählen Sie die Auszeichnung / Ehrung aus</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersAwardYear.0">
+        <source>Year</source>
+        <target>Jahr</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersAwardYear.1">
+        <source>Optional: Year in which the award was given</source>
+        <target>Optional: Jahr in dem die Auszeichnung / Ehrung verliehen wurde</target>
+      </trans-unit>
 
       <trans-unit id="tl_firefighter.ffMemberContact_legend">
         <source>Contact info</source>
@@ -421,8 +489,8 @@
         <target>Datum und Uhrzeit der letzten Änderung</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.title_legend">
-        <source>Title and author</source>
-        <target>Titel und Kategorie</target>
+        <source>Personal data and categorization</source>
+        <target>Personendaten und Kategorisierung</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.date_legend">
         <source>Date and time</source>

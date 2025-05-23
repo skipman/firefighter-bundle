@@ -30,9 +30,12 @@ $GLOBALS['BE_MOD']['content']['firefighter'] = [
 ];
 $GLOBALS['BE_MOD']['firefighter_settings'] = [
     'departments' => ['tables' => ['tl_firefighter_departments']],
-    'functions'   => ['tables' => ['tl_firefighter_functions']],
-    'ranks'       => ['tables' => ['tl_firefighter_ranks']],
     'vehicles'    => ['tables' => ['tl_firefighter_vehicles']],
+    'ranks'       => ['tables' => ['tl_firefighter_ranks']],
+    'courses'     => ['tables' => ['tl_firefighter_courses']],
+    'functions'   => ['tables' => ['tl_firefighter_functions']],
+    'badges'      => ['tables' => ['tl_firefighter_badges']],
+    'awards'      => ['tables' => ['tl_firefighter_awards']],
 ];
 
 // Register Frontend-Modules

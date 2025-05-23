@@ -18,6 +18,9 @@ $GLOBALS['TL_LANG']['MOD']['departments']           = ['Feuerwehren', 'Feuerwehr
 $GLOBALS['TL_LANG']['MOD']['functions']             = ['Funktionen', 'Feuerwehrfunktionen verwalten'];
 $GLOBALS['TL_LANG']['MOD']['ranks']                 = ['Dienstränge', 'Feuerwehrdienstränge verwalten'];
 $GLOBALS['TL_LANG']['MOD']['vehicles']              = ['Fahrzeuge', 'Feuerwehrfahrzeuge verwalten'];
+$GLOBALS['TL_LANG']['MOD']['courses']               = ['Kurse', 'Kurse verwalten'];
+$GLOBALS['TL_LANG']['MOD']['badges']                = ['Leistungsabzeichen', 'Leistungsabzeichen verwalten'];
+$GLOBALS['TL_LANG']['MOD']['awards']                = ['Ehrungen', 'Ehrungen verwalten'];
 
 // Frontend modules
 
