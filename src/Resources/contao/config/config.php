@@ -24,18 +24,33 @@ use Skipman\FirefighterBundle\Modules\ModuleFirefighterReader;
 $GLOBALS['TL_BE']['default'] = 'backend/be_main';
 
 // Register Backend-Modules
-$GLOBALS['BE_MOD']['content']['firefighter'] = [
-    'tables' => ['tl_firefighter_archive', 'tl_firefighter', 'tl_firefighter_category', 'tl_content'],
-    'icon' => 'bundles/firefighterbundle/flame.svg'
-];
+
 $GLOBALS['BE_MOD']['firefighter_settings'] = [
-    'departments' => ['tables' => ['tl_firefighter_departments']],
-    'vehicles'    => ['tables' => ['tl_firefighter_vehicles']],
-    'ranks'       => ['tables' => ['tl_firefighter_ranks']],
-    'courses'     => ['tables' => ['tl_firefighter_courses']],
-    'functions'   => ['tables' => ['tl_firefighter_functions']],
-    'badges'      => ['tables' => ['tl_firefighter_badges']],
-    'awards'      => ['tables' => ['tl_firefighter_awards']],
+    'firefighter' => [
+        'tables' => ['tl_firefighter_archive', 'tl_firefighter', 'tl_firefighter_category', 'tl_content'],
+        'icon' => 'bundles/firefighterbundle/flame.svg',
+    ],
+    'departments' => [
+        'tables' => ['tl_firefighter_departments'],
+    ],
+    'vehicles' => [
+        'tables' => ['tl_firefighter_vehicles'],
+    ],
+    'ranks' => [
+        'tables' => ['tl_firefighter_ranks'],
+    ],
+    'courses' => [
+        'tables' => ['tl_firefighter_courses'],
+    ],
+    'functions' => [
+        'tables' => ['tl_firefighter_functions'],
+    ],
+    'badges' => [
+        'tables' => ['tl_firefighter_badges'],
+    ],
+    'awards' => [
+        'tables' => ['tl_firefighter_awards'],
+    ],
 ];
 
 // Register Frontend-Modules
