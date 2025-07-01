@@ -15,6 +15,7 @@ namespace Skipman\FirefighterBundle\ContentElement;
 use Contao\ContentElement;
 use Contao\StringUtil;
 use Contao\Database;
+use Contao\PageModel;
 
 class FirefighterResourcesElement extends ContentElement
 {
@@ -37,7 +38,13 @@ class FirefighterResourcesElement extends ContentElement
                                 $vehicleData = Database::getInstance()->prepare("SELECT vehicle_short FROM tl_firefighter_vehicles WHERE id=?")->execute($fleet['vehicle'])->fetchAssoc();
                                 if ($vehicleData) {
                                     if ($fleet['link']) {
-                                        $vehicles[] = sprintf('<a href="%s">%s</a>', $this->PageModel::getFrontendUrl($fleet['link']), $vehicleData['vehicle_short']);
+                                        $page = PageModel::findByPk($fleet['link']);
+                                        if ($page !== null) {
+                                            $url = $page->getFrontendUrl();
+                                            $vehicles[] = sprintf('<a href="%s">%s</a>', $url, $vehicleData['vehicle_short']);
+                                        } else {
+                                            $vehicles[] = $vehicleData['vehicle_short'];
+                                        }
                                     } elseif ($fleet['url']) {
                                         $vehicles[] = sprintf('<a href="%s">%s</a>', $fleet['url'], $vehicleData['vehicle_short']);
                                     } else {

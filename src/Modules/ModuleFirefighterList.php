@@ -72,7 +72,9 @@ class ModuleFirefighterList extends ModuleFirefighter
     {
         // Add the "reset categories" link
         if ($this->firefighter_filter_reset) {
-            $this->Template->firefighter_filter_reset = $GLOBALS['TL_LANG']['MSC']['filter_reset'];
+            $this->Template->firefighter_filter_reset = $GLOBALS['TL_LANG']['MSC']['filter_reset'][0];
+            $this->Template->firefighter_filter_resetTitle = $GLOBALS['TL_LANG']['MSC']['filter_reset'][1];
+
         }
 
         // Get the selected categories for filtering

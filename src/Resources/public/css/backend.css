@@ -20,6 +20,12 @@
 .multicolumnwizard .hidelabel fieldset[id*="_vehicles"] label {
   display: contents!important; 
 }
+
+/* 
+ * Adjust the witdh of MCW-fields to reduce spacing between them
+ */
+ td.hidelabel.mcwUpdateFields {width: 0%;}
+ td.hidelabel.mcwUpdateFields ul[id^="sort_fleet"] {width: 150px;}
 /* 
  *Adjust the minimum width of the vehicle list for mobile devices
  */

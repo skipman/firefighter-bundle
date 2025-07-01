@@ -6,7 +6,7 @@
       <nav class="firefighter__filter block">
         <ul class="level_1">
           <?php if ($this->firefighter_filter_reset): ?>
-            <li><button class="filter active" data-category="all"><?= $this->firefighter_filter_reset ?></button></li>
+            <li><button class="filter active" data-category="all" title="<?= $this->firefighter_filter_resetTitle; ?>"><?= $this->firefighter_filter_reset ?></button></li>
           <?php endif; ?>
           <?php foreach ($this->firefightercategories as $category): ?>
             <li><button class="filter" data-category="<?= $category['alias']; ?>"><?= $category['title']; ?></button></li>

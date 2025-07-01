@@ -1,6 +1,6 @@
 <?php if (!empty($this->departments)): ?>
     <div class="content-_firefighter_resources">
-        <h2>Eingesetzte Resourcen</h2>
+        <h2>Eingesetzte Ressourcen</h2>
         <ul>
             <?php foreach ($this->departments as $department): ?>
                 <li>

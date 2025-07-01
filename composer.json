@@ -25,13 +25,15 @@
     "contao-manager-plugin": "Skipman\\FirefighterBundle\\ContaoManager\\Plugin",
     "contao": {
       "sources": {
-        "bundles/firefighter": "src/Resources/public"
+        "bundles/firefighter": "src/Resources/public",
+        "Resources/contao": "contao"
       }
     }
   },
   "require": {
     "php": ">=8.1",
     "contao/core-bundle": "^5.3",
-    "contao/news-bundle": "^5.3"
+    "contao/news-bundle": "^5.3",
+    "menatwork/contao-multicolumnwizard-bundle": "^3.0"
   }
 }

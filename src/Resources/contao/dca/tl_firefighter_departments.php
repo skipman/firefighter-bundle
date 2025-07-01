@@ -71,7 +71,7 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
         ]
     ],
     'palettes' => [
-        'default' => '{department_legend},type,ffnumber,ffname,bfk,afk;'
+        'default' => '{department_legend},type,ffnumber,ffname,bfk,afk,ua;'
                    . '{social_legend:hide},socialChannels;'
                    . '{fleet_legend:hide},fleet',
     ],
@@ -134,6 +134,21 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
             'sql' => "int(10) unsigned NULL default NULL",
             'dependsOn' => 'bfk' // Optional, um die Abhängigkeit anzuzeigen
         ],
+        'ua' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['ua'],
+            'filter' => true,
+            'inputType' => 'select',
+            'options' => ['1', '2', '3', '4', '5', '6', '7', '8'],
+            'eval' => [
+                'mandatory' => false, // Default: false
+                'chosen' => true,
+                'includeBlankOption' => true,
+                'tl_class' => 'w25'
+            ],
+            'sql' => "int(1) unsigned NULL default NULL",
+        ],
+
+        
         'socialChannels' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['socialChannels'],
             'inputType' => 'multiColumnWizard',
@@ -146,8 +161,8 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
                         'options' => ['Webseite', 'Facebook', 'Instagram', 'Youtube', 'X (Twitter)', 'TikTok'],
                         'eval' => ['style' => 'width:180px', 'chosen' => true, 'includeBlankOption' => true],
                     ],
-                    'url' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['url'],
+                    'urlSM' => [
+                        'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['urlSM'],
                         'inputType' => 'text',
                         'eval' => ['rgxp' => 'url', 'style' => 'width:400px', 'tl_class' => 'clr'],
                     ],
@@ -174,7 +189,7 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
                     'link' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['link'],
                         'inputType' => 'pageTree',
-                        'eval' => ['fieldType' => 'radio']
+                        'eval' => ['fieldType' => 'radio', 'style' => 'width:400px']
                     ],
                     'url' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['url'],
@@ -213,7 +228,7 @@ class tl_firefighter_departments extends Backend
 
         return $bfk;
     }
-
+/*
     public function getAfkOptions(DataContainer $dc)
     {
         $afk = [];
@@ -227,6 +242,41 @@ class tl_firefighter_departments extends Backend
         }
         return $afk;
     }
+*/
+    public function getAfkOptions(DataContainer $dc)
+    {
+        $afk = [];
+
+        // 1) Filter-Kontext: wenn kein activeRecord, dann alle AFK ausgeben
+        if (!$dc->activeRecord) {
+            $result = Database::getInstance()
+                ->execute("SELECT id, ffname 
+                            FROM tl_firefighter_departments 
+                           WHERE type='AFK' 
+                        ORDER BY ffname ASC");
+        }
+        // 2) Bearbeitungs-Formular: activeRecord vorhanden
+        elseif ($dc->activeRecord->bfk) {
+            $result = Database::getInstance()
+                ->prepare("SELECT id, ffname 
+                             FROM tl_firefighter_departments 
+                            WHERE type='AFK' 
+                              AND bfk=? 
+                         ORDER BY ffname ASC")
+                ->execute($dc->activeRecord->bfk);
+        }
+        else {
+            // kein BFK gewählt – keine AFK-Optionen
+            return [];
+        }
+
+        while ($result->next()) {
+            $afk[$result->id] = $result->ffname;
+        }
+
+        return $afk;
+    }
+
 
     public function checkMandatoryBfk($value, DataContainer $dc)
     {

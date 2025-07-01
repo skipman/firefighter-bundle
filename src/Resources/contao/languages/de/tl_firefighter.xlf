@@ -186,8 +186,8 @@
         <target>Jahreszahl 4-stellig eingeben</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.ffMemberCourses_legend">
-        <source>Courses / Training</source>
-        <target>Kurse / Ausbildungen</target>
+        <source>Courses</source>
+        <target>Kurse</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.membersCoursesWizard">
         <source>Courses / Training</source>
@@ -233,7 +233,7 @@
 
       <trans-unit id="tl_firefighter.ffMemberAwards_legend">
         <source>Awards</source>
-        <target>Verliehene Auszeichnungen / Ehrungen</target>
+        <target>Auszeichnungen</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.membersAwardsWizard">
         <source>Awards</source>
@@ -489,8 +489,8 @@
         <target>Datum und Uhrzeit der letzten Änderung</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.title_legend">
-        <source>Personal data and categorization</source>
-        <target>Personendaten und Kategorisierung</target>
+        <source>Personal data</source>
+        <target>Personendaten</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.date_legend">
         <source>Date and time</source>

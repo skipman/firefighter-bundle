@@ -39,11 +39,11 @@ $GLOBALS['BE_MOD']['firefighter_settings'] = [
     'ranks' => [
         'tables' => ['tl_firefighter_ranks'],
     ],
-    'courses' => [
-        'tables' => ['tl_firefighter_courses'],
-    ],
     'functions' => [
         'tables' => ['tl_firefighter_functions'],
+    ],
+    'courses' => [
+        'tables' => ['tl_firefighter_courses'],
     ],
     'badges' => [
         'tables' => ['tl_firefighter_badges'],

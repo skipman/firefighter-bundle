@@ -12,6 +12,7 @@
 
 namespace Skipman\FirefighterBundle\ContaoManager;
 
+use Contao\CalendarBundle\ContaoCalendarBundle;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
@@ -24,7 +25,11 @@ class Plugin implements BundlePluginInterface
     {
         return [
             BundleConfig::create(FirefighterBundle::class)
-                ->setLoadAfter([ContaoCoreBundle::class]),
+                ->setLoadAfter([
+                    ContaoCoreBundle::class,
+                    // Load the ContaoCalendarBundle so that it is not overwritten
+                    ContaoCalendarBundle::class
+                ]),
         ];
     }
 }

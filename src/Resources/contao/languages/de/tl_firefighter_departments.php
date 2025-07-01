@@ -21,19 +21,26 @@ $GLOBALS['TL_LANG']['tl_firefighter_departments']['social_legend'] = 'Soziale Ka
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['fleet_legend'] = 'Fahrzeuge';
 
 // Fields
-$GLOBALS['TL_LANG']['tl_firefighter_departments']['fleet'] = ['Fahrzeuge', 'Verwalte die Fahrzeuge und ihre Links.'];
-$GLOBALS['TL_LANG']['tl_firefighter_departments']['vehicle'] = ['Fahrzeug', 'Wähle ein Fahrzeug aus der Liste aus.'];
-$GLOBALS['TL_LANG']['tl_firefighter_departments']['link'] = ['interne Seite', 'Wähle eine Seite aus dem Seitenbaum aus.'];
-$GLOBALS['TL_LANG']['tl_firefighter_departments']['url'] = ['externe URL', 'Gib hier eine URL an, wenn sich die Beschreibungsseite nicht innerhalb des Seitenbaums befindet.'];
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['type'] = ['Typ', 'Wähle den Typ der Feuerwehr'];
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['ffnumber'] = ['FF-Nummer', 'Bitte gib die Nummer der Feuerwehr ein.'];
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['ffname'] = ['Feuerwehrname', 'Bitte gib den Namen der Feuerwehr ein.'];
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['bfk'] = ['BFK', 'Bitte wähle das Bezirksfeuerwehrkommando aus.'];
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['afk'] = ['AFK', 'Bitte wähle das Abschnittsfeuerwehrkommando aus.'];
+$GLOBALS['TL_LANG']['tl_firefighter_departments']['ua'] = ['UA', 'Bitte wähle die Nummer des Unterabschnitts aus (UA1, UA2...'];
+
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['socialChannels'] = ['Soziale Kanäle', 'Hier kannst Du die sozialen Kanäle der Feuerwehr angeben.'];
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['platform'] = ['Plattform', 'Bitte wählen Sie die Plattform aus.'];
-$GLOBALS['TL_LANG']['tl_firefighter_departments']['url'] = ['URL', 'Bitte gib die URL ein.'];
+$GLOBALS['TL_LANG']['tl_firefighter_departments']['urlSM'] = ['SM-URL', 'Bitte gib die URL zu Eurer Website / SM-Kanal ein.'];
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['linkTitle'] = ['Linktitel', 'Bitte gib einen Titel für den Link ein.'];
+
 $GLOBALS['TL_LANG']['tl_firefighter_departments']['vehicles'] = ['Fahrzeuge', 'Hier kannst Du die Fahrzeuge der Feuerwehr angeben.'];
-$GLOBALS['TL_LANG']['tl_firefighter_departments']['vehicle'] = ['Fahrzeug', 'Bitte wähle ein Fahrzeug aus.'];
-$GLOBALS['TL_LANG']['tl_firefighter_departments']['link'] = ['Link', 'Bitte wähle einen Link aus.'];
+$GLOBALS['TL_LANG']['tl_firefighter_departments']['fleet'] = ['Fahrzeuge', 'Verwalte die Fahrzeuge und ihre Links.'];
+$GLOBALS['TL_LANG']['tl_firefighter_departments']['vehicle'] = ['Fahrzeug', 'Wähle ein Fahrzeug aus der Liste aus.'];
+$GLOBALS['TL_LANG']['tl_firefighter_departments']['link'] = ['interne Seite', 'Wähle eine Seite aus dem Seitenbaum aus.'];
+$GLOBALS['TL_LANG']['tl_firefighter_departments']['url'] = ['externe URL', 'Gib hier eine URL an, wenn sich die Beschreibungsseite nicht innerhalb des Seitenbaums befindet.'];
+
+
+
+
+//$GLOBALS['TL_LANG']['tl_firefighter_departments']['vehicle'] = ['Fahrzeug', 'Bitte wähle ein Fahrzeug aus.'];
+//$GLOBALS['TL_LANG']['tl_firefighter_departments']['link'] = ['Interner Link', 'Bitte wähle einen Link aus dem Seitenbaum aus.'];
