@@ -20,6 +20,12 @@
 .multicolumnwizard .hidelabel fieldset[id*="_vehicles"] label {
   display: contents!important; 
 }
+#pal_social_legend,
+#pal_fleet_legend,
+#pal_ffMemberFunctionLocal_legend {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
 
 /* 
  * Adjust the witdh of MCW-fields to reduce spacing between them

@@ -21,3 +21,6 @@ FIX: Duplicate field name in fire department module
 FIX: Improve backend display of vehicle selection in fire department module
 FIX: ContentElement ce_ff-resources causes an error when accessed under a different domain
 FIX: Label in category filter
+
+UPDATE 2025-10-25
+FIX: Backend Horizontal scrollbar for MCW fields with more than 2 columns
