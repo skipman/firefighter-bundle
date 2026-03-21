@@ -14,6 +14,7 @@ use Contao\DC_Table;
 use Contao\Backend;
 use Contao\Database;
 use Contao\DataContainer;
+use Contao\Input;
 
 $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
     'config' => [
@@ -88,19 +89,43 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
             'options' => ['BFK', 'AFK', 'FF', 'BTF'],
             'default' => 'FF',
             'filter' => true,
-            'eval' => ['mandatory' => true, 'maxlength' => 3,  'sorting' => true, 'search' => true, 'flag' => 3, 'lenght' => 3, 'tl_class' => 'w25'],
+            'eval' => [
+                'mandatory' => true,
+                'maxlength' => 3,
+                'sorting' => true,
+                'search' => true,
+                'flag' => 3,
+                'lenght' => 3,
+                'tl_class' => 'w25',
+                ],
             'sql' => "varchar(3) NOT NULL default ''"
         ],
         'ffnumber' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['ffnumber'],
             'inputType' => 'text',
-            'eval' => ['mandatory' => true, 'maxlength' => 10, 'rgxp' => 'alnum', 'unique' => true, 'sorting' => true, 'search' => true, 'tl_class' => 'w25'],
+            'eval' => [
+                'mandatory' => true,
+                'maxlength' => 10, 
+                'rgxp' => 'alnum', 
+                'unique' => true, 
+                'sorting' => true, 
+                'search' => true, 
+                'tl_class' => 'w25',
+                ],
             'sql' => "varchar(10) NOT NULL default ''"
         ],
         'ffname' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['ffname'],
             'inputType' => 'text',
-            'eval' => ['mandatory' => true, 'maxlength' => 255,  'sorting' => true, 'search' => true, 'flag' => 3, 'lenght' => 3, 'tl_class' => 'w50'],
+            'eval' => [
+                'mandatory' => true, 
+                'maxlength' => 255,  
+                'sorting' => true, 
+                'search' => true, 
+                'flag' => 3, 
+                'lenght' => 3, 
+                'tl_class' => 'w50',
+                ],
             'sql' => "varchar(255) NOT NULL default ''"
         ],
         'bfk' => [
@@ -109,13 +134,14 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
             'inputType' => 'select',
             'options_callback' => ['tl_firefighter_departments', 'getBfkOptions'],
             'eval' => [
-                'mandatory' => false, 
+                'mandatory' => false,
                 'chosen' => true,
                 'includeBlankOption' => true,
                 'tl_class' => 'w25',
-                'customMandatory' => ['tl_firefighter_departments', 'checkMandatoryBfk'],
-                'submitOnChange' => true, // AJAX-Auslösung bei Änderung
-                'ajaxCallback' => ['tl_firefighter_departments', 'updateAfkOptions'] // AJAX-Callback
+                'submitOnChange' => true,
+            ],
+            'save_callback' => [
+                ['tl_firefighter_departments', 'checkMandatoryBfk'],
             ],
             'sql' => "int(10) unsigned NULL default NULL",
         ],
@@ -125,15 +151,17 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
             'inputType' => 'select',
             'options_callback' => ['tl_firefighter_departments', 'getAfkOptions'],
             'eval' => [
-                'mandatory' => false, // Default: false
+                'mandatory' => false,
                 'chosen' => true,
                 'includeBlankOption' => true,
                 'tl_class' => 'w25',
-                'customMandatory' => ['tl_firefighter_departments', 'checkMandatoryBfk']
+            ],
+            'save_callback' => [
+                ['tl_firefighter_departments', 'checkMandatoryBfk'],
             ],
             'sql' => "int(10) unsigned NULL default NULL",
-            'dependsOn' => 'bfk' // Optional, um die Abhängigkeit anzuzeigen
-        ],
+            'dependsOn' => 'bfk',
+        ],        
         'ua' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['ua'],
             'filter' => true,
@@ -143,7 +171,7 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
                 'mandatory' => false, // Default: false
                 'chosen' => true,
                 'includeBlankOption' => true,
-                'tl_class' => 'w25'
+                'tl_class' => 'w25',
             ],
             'sql' => "int(1) unsigned NULL default NULL",
         ],
@@ -159,17 +187,29 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['platform'],
                         'inputType' => 'select',
                         'options' => ['Webseite', 'Facebook', 'Instagram', 'Youtube', 'X (Twitter)', 'TikTok'],
-                        'eval' => ['style' => 'width:180px', 'chosen' => true, 'includeBlankOption' => true],
+                        'eval' => [
+                            'wrapper_style' => 'width:20%', 
+                            'style' => 'width:100%',
+                            'includeBlankOption' => true,
+                            ],
                     ],
                     'urlSM' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['urlSM'],
                         'inputType' => 'text',
-                        'eval' => ['rgxp' => 'url', 'style' => 'width:400px', 'tl_class' => 'clr'],
+                        'eval' => [
+                            'rgxp' => 'url', 
+                            'wrapper_style' => 'width:40%', 
+                            'style' => 'width:100%', 
+                            'tl_class' => 'clr',
+                            ],
                     ],
                     'linkTitle' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['linkTitle'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:400px'],
+                        'eval' => [
+                            'wrapper_style' => 'width:40%', 
+                            'style' => 'width:100%',
+                            ],
                     ],
                 ],
             ],
@@ -184,17 +224,30 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['vehicle'],
                         'inputType' => 'select',
                         'options_callback' => ['tl_firefighter_departments', 'getVehicles'],
-                        'eval' => ['class' => 'unhideLabel', 'style' => 'width:180px', 'chosen' => true, 'includeBlankOption' => true],
+                        'eval' => [
+                            'class' => 'unhideLabel',
+                            'wrapper_style' => 'width:20%', 
+                            'style' => 'width:100%',
+                            'includeBlankOption' => true,
+                            ],
                     ],
                     'link' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['link'],
                         'inputType' => 'pageTree',
-                        'eval' => ['fieldType' => 'radio', 'style' => 'width:400px']
+                        'eval' => [
+                            'fieldType' => 'radio', 
+                            'wrapper_style' => 'width:40%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'url' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter_departments']['url'],
                         'inputType' => 'text',
-                        'eval' => ['rgxp' => 'url', 'style' => 'width:400px'],
+                        'eval' => [
+                            'rgxp' => 'url', 
+                            'wrapper_style' => 'width:40%', 
+                            'style' => 'width:100%',
+                            ],
                     ],
                 ],
             ],
@@ -228,45 +281,39 @@ class tl_firefighter_departments extends Backend
 
         return $bfk;
     }
-/*
-    public function getAfkOptions(DataContainer $dc)
-    {
-        $afk = [];
-        if ($dc->activeRecord->bfk) {
-            $result = Database::getInstance()->prepare("SELECT id, ffname FROM tl_firefighter_departments WHERE type='AFK' AND bfk=? ORDER BY ffname ASC")
-                                            ->execute($dc->activeRecord->bfk);
 
-            while ($result->next()) {
-                $afk[$result->id] = $result->ffname;
-            }
+    public function checkMandatoryBfk($value, DataContainer $dc)
+    {
+        $type = $dc->activeRecord->type ?? Input::post('type');
+
+        if ('BFK' !== $type && empty($value)) {
+            throw new \Exception("Das Feld 'BFK' ist für diesen Eintrag erforderlich.");
         }
-        return $afk;
+
+        return $value;
     }
-*/
-    public function getAfkOptions(DataContainer $dc)
+
+    public function getAfkOptions(DataContainer $dc): array
     {
         $afk = [];
+        $activeRecord = $dc->activeRecord ?? null;
+        $bfk = $activeRecord->bfk ?? Input::post('bfk');
 
-        // 1) Filter-Kontext: wenn kein activeRecord, dann alle AFK ausgeben
-        if (!$dc->activeRecord) {
+        if (null === $activeRecord) {
             $result = Database::getInstance()
-                ->execute("SELECT id, ffname 
-                            FROM tl_firefighter_departments 
-                           WHERE type='AFK' 
+                ->execute("SELECT id, ffname
+                            FROM tl_firefighter_departments
+                            WHERE type='AFK'
                         ORDER BY ffname ASC");
-        }
-        // 2) Bearbeitungs-Formular: activeRecord vorhanden
-        elseif ($dc->activeRecord->bfk) {
+        } elseif ($bfk) {
             $result = Database::getInstance()
-                ->prepare("SELECT id, ffname 
-                             FROM tl_firefighter_departments 
-                            WHERE type='AFK' 
-                              AND bfk=? 
-                         ORDER BY ffname ASC")
-                ->execute($dc->activeRecord->bfk);
-        }
-        else {
-            // kein BFK gewählt – keine AFK-Optionen
+                ->prepare("SELECT id, ffname
+                            FROM tl_firefighter_departments
+                            WHERE type='AFK'
+                            AND bfk=?
+                        ORDER BY ffname ASC")
+                ->execute($bfk);
+        } else {
             return [];
         }
 
@@ -275,36 +322,5 @@ class tl_firefighter_departments extends Backend
         }
 
         return $afk;
-    }
-
-
-    public function checkMandatoryBfk($value, DataContainer $dc)
-    {
-        // Check the value of 'type'
-        if ($dc->activeRecord->type !== 'BFK') {
-            // Wenn 'type' nicht BFK ist, setze mandatory auf true
-            if (empty($value)) {
-                throw new \Exception("Das Feld 'BFK' ist für diesen Eintrag erforderlich.");
-            }
-        }
-
-        // If 'type' is BFK, mandatory is not required (defaults to false)
-        return $value;
-    }
-
-    public function updateAfkOptions(DataContainer $dc)
-    {
-        if ($dc->activeRecord->bfk) {
-            $afkOptions = $this->getAfkOptions($dc);
-
-            $arrReturn = [];
-            foreach ($afkOptions as $value => $label) {
-                $arrReturn[] = ['value' => $value, 'label' => $label];
-            }
-
-            // Return as JSON for the AJAX request
-            echo json_encode($arrReturn);
-            exit;
-        }
     }
 }

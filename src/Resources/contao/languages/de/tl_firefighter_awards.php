@@ -18,6 +18,6 @@ $GLOBALS['TL_LANG']['tl_firefighter_awards']['delete'] = ['Auszeichnung löschen
 $GLOBALS['TL_LANG']['tl_firefighter_awards']['show'] = ['Auszeichnung Details', 'Details der Auszeichnung ID %s anzeigen'];
 
 // Fields
-$GLOBALS['TL_LANG']['tl_firefighter_awards']['award_legend'] = ['Auszeichnungen / Ehrungen', 'Ehrungen verwalten'];
+$GLOBALS['TL_LANG']['tl_firefighter_awards']['award_legend'] = 'Auszeichnungen / Ehrungen';
 $GLOBALS['TL_LANG']['tl_firefighter_awards']['award_short'] = ['Ehrung kurz', 'Abkürzung für die Ehrung / Auszeichnung.'];
 $GLOBALS['TL_LANG']['tl_firefighter_awards']['award_long'] = ['Ehrung lang', 'Ehrung / Auszeichnung ausgeschrieben.'];

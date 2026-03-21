@@ -143,22 +143,162 @@ class FirefighterHelper
         return $vehicles;
     }
 
-    public static function filterEmptyMCWrows($value): array
-    {
-        $rows = \Contao\StringUtil::deserialize($value, true);
-        return array_filter($rows, static fn($row) => array_filter($row));
-    }
-
-    public static function sanitizeMCWrows($value): string
+    public static function sanitizeFunctionLocalRows($value): string
     {
         $rows = \Contao\StringUtil::deserialize($value, true);
 
-        // Nur speichern, wenn mindestens EIN Feld NICHT leer ist
         $cleaned = array_filter($rows, static function ($row) {
-            return is_array($row) && array_filter($row, static fn($val) => trim((string)$val) !== '');
+            if (!is_array($row)) {
+                return false;
+            }
+
+            // Nur behalten, wenn Funktion gesetzt ist
+            $function = trim((string) ($row['membersFunctionLocal'] ?? ''));
+
+            return $function !== '';
         });
 
         return serialize(array_values($cleaned));
+    }
+    public static function filterFunctionLocalRows($value): array
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        return array_values(array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $function = trim((string) ($row['membersFunctionLocal'] ?? ''));
+
+            return $function !== '';
+        }));
+    }
+    public static function sanitizeFunctionSectionRows($value): string
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        $cleaned = array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            // Nur behalten, wenn Funktion gesetzt ist
+            $function = trim((string) ($row['membersFunctionSection'] ?? ''));
+
+            return $function !== '';
+        });
+
+        return serialize(array_values($cleaned));
+    }
+    public static function filterFunctionSectionRows($value): array
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        return array_values(array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $function = trim((string) ($row['membersFunctionSection'] ?? ''));
+
+            return $function !== '';
+        }));
+    }
+    public static function sanitizeCourseRows($value): string
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        $cleaned = array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $course = trim((string) ($row['membersCourse'] ?? ''));
+
+            return '' !== $course;
+        });
+
+        return serialize(array_values($cleaned));
+    }
+
+    public static function filterCourseRows($value): array
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        return array_values(array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $course = trim((string) ($row['membersCourse'] ?? ''));
+
+            return '' !== $course;
+        }));
+    }
+
+    public static function sanitizeBadgeRows($value): string
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        $cleaned = array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $badge = trim((string) ($row['membersBadge'] ?? ''));
+
+            return '' !== $badge;
+        });
+
+        return serialize(array_values($cleaned));
+    }
+
+    public static function filterBadgeRows($value): array
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        return array_values(array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $badge = trim((string) ($row['membersBadge'] ?? ''));
+
+            return '' !== $badge;
+        }));
+    }
+
+    public static function sanitizeAwardRows($value): string
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        $cleaned = array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $award = trim((string) ($row['membersAward'] ?? ''));
+
+            return '' !== $award;
+        });
+
+        return serialize(array_values($cleaned));
+    }
+
+    public static function filterAwardRows($value): array
+    {
+        $rows = \Contao\StringUtil::deserialize($value, true);
+
+        return array_values(array_filter($rows, static function ($row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            $award = trim((string) ($row['membersAward'] ?? ''));
+
+            return '' !== $award;
+        }));
     }
 
 

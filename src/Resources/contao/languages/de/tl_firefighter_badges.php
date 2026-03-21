@@ -18,6 +18,6 @@ $GLOBALS['TL_LANG']['tl_firefighter_badges']['delete'] = ['Abzeichen löschen', 
 $GLOBALS['TL_LANG']['tl_firefighter_badges']['show'] = ['Abzeichen Details', 'Details des Abzeichens ID %s anzeigen'];
 
 // Fields
-$GLOBALS['TL_LANG']['tl_firefighter_badges']['badge_legend'] = ['Leistungsabzeichen', 'Abzeichen verwalten'];
+$GLOBALS['TL_LANG']['tl_firefighter_badges']['badge_legend'] = 'Leistungsabzeichen';
 $GLOBALS['TL_LANG']['tl_firefighter_badges']['badge_short'] = ['Abzeichen kurz', 'Abkürzung für das Abzeichen.'];
 $GLOBALS['TL_LANG']['tl_firefighter_badges']['badge_long'] = ['Abzeichen lang', 'Abzeichenbezeichnung ausgeschrieben.'];

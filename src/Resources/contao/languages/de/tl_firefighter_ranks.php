@@ -18,7 +18,7 @@ $GLOBALS['TL_LANG']['tl_firefighter_ranks']['delete'] = ['Dienstrang löschen', 
 $GLOBALS['TL_LANG']['tl_firefighter_ranks']['show'] = ['Dienstrang Details', 'Details des Dienstrangs ID %s anzeigen'];
 
 // Fields
-$GLOBALS['TL_LANG']['tl_firefighter_ranks']['rank_legend'] = ['Dienstgrade', 'Dienstgrade verwalten'];
+$GLOBALS['TL_LANG']['tl_firefighter_ranks']['rank_legend'] = 'Dienstgrade';
 $GLOBALS['TL_LANG']['tl_firefighter_ranks']['rank_short'] = ['Dienstgrad kurz', 'Abkürzung für den Dienstgrad.'];
 $GLOBALS['TL_LANG']['tl_firefighter_ranks']['rank_long'] = ['Dienstgrad lang', 'Dienstgrad ausgeschrieben.'];
 $GLOBALS['TL_LANG']['tl_firefighter_ranks']['singleSRC'] = ['Bild', 'Bild für den Dienstgrad.'];

@@ -4,8 +4,11 @@
         <ul>
             <?php foreach ($this->departments as $department): ?>
                 <li>
-                    FF <?php echo $department['ffname']; ?>:
-                    <?php echo $department['vehicles']; ?> / <?php echo $department['team']; ?> Mitglieder
+                    FF <?php echo $department['ffname']; ?><?php if (!empty($department['vehicles']) || !empty($department['team'])): ?>:<?php endif; ?> 
+                    <?php echo $department['vehicles']; ?>
+                    <?php if (!empty($department['vehicles']) && !empty($department['team'])): ?> / <?php endif; ?>
+                    <?php if (!empty($department['team'])): ?><?php echo $department['team']; ?> Mitglieder<?php endif; ?>
+
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -19,12 +22,13 @@
             <?php foreach ($this->otherOrganisations as $organisation): ?>
                 <li>
                     <?php if (!empty($organisation['otherOrganisationName'])): ?>
-                        <?php echo $organisation['otherOrganisationName']; ?>:
+                        <?php echo $organisation['otherOrganisationName']; ?><?php if (!empty($organisation['otherOrganisationVehicles']) || !empty($organisation['team'])): ?>:<?php endif; ?>
                     <?php endif; ?>
                     <?php if (!empty($organisation['otherOrganisationVehicles'])): ?>
-                        <?php echo $organisation['otherOrganisationVehicles']; ?> /
+                        <?php echo $organisation['otherOrganisationVehicles']; ?> 
                     <?php endif; ?>
                     <?php if (!empty($organisation['team'])): ?>
+                        <?php if (!empty($organisation['otherOrganisationVehicles'])): ?> / <?php endif; ?>
                         <?php echo $organisation['team']; ?> Mitglieder
                     <?php endif; ?>
                 </li>

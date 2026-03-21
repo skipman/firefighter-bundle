@@ -21,7 +21,7 @@ use Skipman\FirefighterBundle\Models\FirefighterCategoryModel;
 use Skipman\FirefighterBundle\Modules\ModuleFirefighterReader;
 
 // Register the backend template
-$GLOBALS['TL_BE']['default'] = 'backend/be_main';
+//$GLOBALS['TL_BE']['default'] = 'backend/be_main';
 
 // Register Backend-Modules
 

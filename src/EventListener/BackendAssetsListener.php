@@ -31,8 +31,5 @@ class BackendAssetsListener
         if (!$this->scopeMatcher->isBackendRequest($request)) {
             return;
         }
-
-        $GLOBALS['TL_CSS'][] = 'bundles/firefighter/css/backend.css|static';
-        $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/firefighter/js/mcw-fix.js|static';
     }
 }

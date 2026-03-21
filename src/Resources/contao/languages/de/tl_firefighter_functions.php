@@ -15,7 +15,7 @@ $GLOBALS['TL_LANG']['tl_firefighter_functions']['copy'] = ['Funktion kopieren', 
 $GLOBALS['TL_LANG']['tl_firefighter_functions']['new'] = ['Neue Funktion anlegen', 'Legt eine neue Funktion an'];
 $GLOBALS['TL_LANG']['tl_firefighter_functions']['show'] = ['Funktion anzeigen', 'Details der Funktion ID %s anzeigen'];
 
-$GLOBALS['TL_LANG']['tl_firefighter_functions']['function_legend'] = ['Funktionen', 'Funktionen verwalten'];
+$GLOBALS['TL_LANG']['tl_firefighter_functions']['function_legend'] = 'Funktionen';
 $GLOBALS['TL_LANG']['tl_firefighter_functions']['function_short'] = ['Funktion Kurz', 'Abkürzung der Funktion'];
 $GLOBALS['TL_LANG']['tl_firefighter_functions']['function_long'] = ['Funktion Lang', 'Funktion ausgeschrieben'];
 $GLOBALS['TL_LANG']['tl_firefighter_functions']['function_overlocal'] = ['Überörtlich?', 'Anhaken, wenn es sich um eine überörtliche Funktion handelt'];

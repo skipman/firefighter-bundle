@@ -22,31 +22,71 @@ use Contao\StringUtil;
 use Contao\BackendUser;
 use Contao\DataContainer;
 use Contao\CoreBundle\Exception\AccessDeniedException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Skipman\FirefighterBundle\Helper\FirefighterHelper;
 use Skipman\FirefighterBundle\Models\FirefighterArchiveModel;
+use Composer\InstalledVersions;
 
 System::loadLanguageFile('tl_content');
 
-$GLOBALS['TL_DCA']['tl_firefighter']['fields']['headline']['save_callback'][] = ['tl_firefighter', 'generateHeadline'];
-$GLOBALS['TL_DCA']['tl_firefighter']['fields']['alias']['save_callback'][] = ['tl_firefighter', 'generateAlias'];
+$contaoVersion = InstalledVersions::getPrettyVersion('contao/core-bundle');
+$isContao57OrHigher = $contaoVersion && version_compare($contaoVersion, '5.7.0', '>=');
+
+if ($isContao57OrHigher) {
+    $firefighterOperations = [
+        '!edit',
+        '!copy',
+        'cut',
+        'delete',
+        'toggle' => [
+            'href' => 'act=toggle&amp;field=published',
+            'icon' => 'visible.svg',
+            'primary' => true,
+        ],
+        'feature' => [
+            'href' => 'act=toggle&amp;field=featured',
+            'icon' => 'featured.svg',
+        ],
+        'show',
+    ];
+} else {
+    $firefighterOperations = [
+        'editheader' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['editmeta'],
+            'href'  => 'act=edit',
+            'icon'  => 'edit.svg',
+        ],
+        'copy',
+        'cut',
+        'delete',
+        'toggle' => [
+            'href' => 'act=toggle&amp;field=published',
+            'icon' => 'visible.svg',
+            'showInHeader' => true,
+        ],
+        'feature' => [
+            'href' => 'act=toggle&amp;field=featured',
+            'icon' => 'featured.svg',
+        ],
+        'show',
+    ];
+}
 
 $GLOBALS['TL_DCA']['tl_firefighter'] = [
     'config' => [
         'dataContainer' => DC_Table::class,
         'ptable' => 'tl_firefighter_archive',
-        'ctable' => ['tl_content'],
         'switchToEdit' => true,
         'enableVersioning' => true,
+        'onload_callback' => [
+            ['tl_firefighter', 'checkPermission'],
+        ],
         'onsubmit_callback' => [
             ['tl_firefighter', 'updateHeadlineAndAlias'],
-            ['tl_firefighter', 'createChildElement'],
         ],
         'oninvalidate_cache_tags_callback' => [
             ['tl_firefighter', 'addSitemapCacheInvalidationTag'],
         ],
-    //    'onload_callback' => [
-    //        ['tl_firefighter', 'checkPermission'],
-    //    ],
         'sql' => [
             'keys' => [
                 'id' => 'primary',
@@ -67,7 +107,6 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'defaultSearchField' => 'membersLastname',
             'child_record_callback' => ['tl_firefighter', 'listItems'],
             'paste_button_callback' => ['tl_firefighter', 'pasteElement'],
-            'group_callback' => ['tl_firefighter', 'getGroupHeader'],
         ],
         'label' => [
             'fields' => ['membersLastname', 'membersFirstname', 'membersRank', 'membersHomebase'],
@@ -81,31 +120,7 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                 'attributes' => 'onclick="Backend.getScrollOffset()" accesskey="e"',
             ],
         ],
-        'operations' => [
-            'editheader' => [
-                'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['editmeta'],
-                'href'  => 'act=edit',
-                'icon'  => 'edit.svg',
-            ],
-            'edit' => [
-                'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['edit'],
-                'href'  => 'table=tl_content',
-                'icon'  => 'children.svg',
-            ],
-            'copy',
-            'cut',
-            'delete',
-            'toggle' => [
-                'href' => 'act=toggle&amp;field=published',
-                'icon' => 'visible.svg',
-                'showInHeader' => true,
-            ],
-            'feature' => [
-                'href' => 'act=toggle&amp;field=featured',
-                'icon' => 'featured.svg',
-            ],
-            'show',
-        ],
+        'operations' => $firefighterOperations,
     ],
     'palettes' => [
         '__selector__' => ['addImage', 'source', 'overwriteMeta'],
@@ -158,7 +173,6 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'search' => false,
             'inputType' => 'text',
             'eval' => ['rgxp' => 'alias', 'unique' => true, 'maxlength' => 128, 'tl_class' => 'w50'],
-            'save_callback' => ['tl_firefighter', 'generateAlias'],
             'sql' => "varchar(255) BINARY NOT NULL default ''",
         ],
         'membersFirstname' => [
@@ -193,7 +207,6 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'options_callback' => [FirefighterHelper::class, 'getRankShortOptions'],
             'eval' => [
                 'maxlength' => 255,
-                'chosen' => true,
                 'includeBlankOption' => true,
                 'tl_class' => 'w25',
             ],
@@ -221,7 +234,6 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'options_callback' => [FirefighterHelper::class, 'getDepartments'],
             'eval' => [
                 'maxlength' => 255,
-                'chosen' => true,
                 'includeBlankOption' => true,
                 'tl_class' => 'w25',
             ],
@@ -245,7 +257,7 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'filter' => true,
             'inputType' => 'select',
             'foreignKey' => 'tl_firefighter_category.title',
-            'eval' => ['multiple' => true, 'chosen' => true, 'tl_class' => 'w50'],
+            'eval' => ['multiple' => true, 'tl_class' => 'w50', 'chosen' => true,],
             'sql' => 'blob NULL',
         ],         
         'addImage' => [
@@ -264,29 +276,49 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionLocal'],
                         'inputType' => 'select',
                         'options_callback' => [FirefighterHelper::class, 'getFunctionLocalShortOptions'],
-                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                        'eval' => [
+                            'includeBlankOption' => true, 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersFunctionLocalFromMonth' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionLocalFromMonth'],
                         'inputType' => 'select',
                         'options' => ['01','02','03','04','05','06','07','08','09','10','11','12'],
-                        'eval' => ['includeBlankOption' => true, 'style' => 'width:50px',]
+                        'eval' => [
+                            'includeBlankOption' => true,  
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersFunctionLocalFromYear' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionLocalFromYear'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:80px', 'maxlength' => 4,]
+                        'eval' => [ 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%', 
+                            'maxlength' => 4,
+                            ]
                     ],
                     'membersFunctionLocalUntilMonth' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionLocalUntilMonth'],
                         'inputType' => 'select',
                         'options' => ['01','02','03','04','05','06','07','08','09','10','11','12'],
-                        'eval' => ['includeBlankOption' => true, 'style' => 'width:50px',]
+                        'eval' => [
+                            'includeBlankOption' => true,  
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersFunctionLocalUntilYear' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionLocalUntilYear'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:80px', 'maxlength' => 4,]
+                        'eval' => [ 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%', 
+                            'maxlength' => 4,
+                            ]
                     ]
                 ],
                 'tl_class' => 'clr',
@@ -295,8 +327,12 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                 'ignoreEmptySubmit' => true,
             ],
             'sql' => "blob NULL",
-            'load_callback' => [FirefighterHelper::class, 'filterEmptyMCWrows'],
-            'save_callback' => [FirefighterHelper::class, 'sanitizeMCWrows'],
+            'load_callback' => [
+                [FirefighterHelper::class, 'filterFunctionLocalRows'],
+            ],
+            'save_callback' => [
+                [FirefighterHelper::class, 'sanitizeFunctionLocalRows'],
+            ],
         ],
 
         'membersFunctionSectionWizard' => [
@@ -308,35 +344,61 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionSection'],
                         'inputType' => 'select',
                         'options_callback' => [FirefighterHelper::class, 'getFunctionSectionShortOptions'],
-                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                        'eval' => [
+                            'includeBlankOption' => true, 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersFunctionSectionFromMonth' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionSectionFromMonth'],
                         'inputType' => 'select',
                         'options' => ['01','02','03','04','05','06','07','08','09','10','11','12'],
-                        'eval' => ['includeBlankOption' => true,'style' => 'width:50px',]
+                        'eval' => [
+                            'includeBlankOption' => true,
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersFunctionSectionFromYear' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionSectionFromYear'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:80px', 'maxlength' => 4,]
+                        'eval' => [
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%', 
+                            'maxlength' => 4,
+                            ]
                     ],
                     'membersFunctionSectionUntilMonth' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionSectionUntilMonth'],
                         'inputType' => 'select',
                         'options' => ['01','02','03','04','05','06','07','08','09','10','11','12'],
-                        'eval' => ['includeBlankOption' => true, 'style' => 'width:50px',]
+                        'eval' => [
+                            'includeBlankOption' => true, 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersFunctionSectionUntilYear' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersFunctionSectionUntilYear'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:80px', 'maxlength' => 4,]
+                        'eval' => [
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%', 
+                            'maxlength' => 4,
+                            ]
                     ],
                 ],
                 'tl_class' => 'clr',
                 'minCount' => 0,
             ],
-            'sql' => "blob NULL"
+            'sql' => "blob NULL",
+            'load_callback' => [
+                [FirefighterHelper::class, 'filterFunctionSectionRows'],
+            ],
+            'save_callback' => [
+                [FirefighterHelper::class, 'sanitizeFunctionSectionRows'],
+            ],
         ],
         'membersCoursesWizard' => [
             'exclude' => true,
@@ -347,19 +409,32 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersCourse'],
                         'inputType' => 'select',
                         'options_callback' => [FirefighterHelper::class, 'getCoursesShortOptions'],
-                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                        'eval' => [
+                            'includeBlankOption' => true, 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersCourseYear' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersCourseYear'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:50px',]
+                        'eval' => [
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                 ],
                 'tl_class' => 'clr',
                 'minCount' => 0,
                 'ignoreEmptySubmit' => true,
             ],
-            'sql' => "blob NULL"
+            'sql' => "blob NULL",
+            'load_callback' => [
+                [FirefighterHelper::class, 'filterCourseRows'],
+            ],
+            'save_callback' => [
+                [FirefighterHelper::class, 'sanitizeCourseRows'],
+            ],
         ],
         'membersBadgesWizard' => [
             'exclude' => true,
@@ -370,18 +445,31 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersBadge'],
                         'inputType' => 'select',
                         'options_callback' => [FirefighterHelper::class, 'getBadgesShortOptions'],
-                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                        'eval' => [
+                            'includeBlankOption' => true, 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersBadgeYear' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersBadgeYear'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:50px',]
+                        'eval' => [
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                 ],
                 'tl_class' => 'clr',
                 'minCount' => 0,
             ],
-            'sql' => "blob NULL"
+            'sql' => "blob NULL",
+            'load_callback' => [
+                [FirefighterHelper::class, 'filterBadgeRows'],
+            ],
+            'save_callback' => [
+                [FirefighterHelper::class, 'sanitizeBadgeRows'],
+            ],
         ],
         'membersAwardsWizard' => [
             'exclude' => true,
@@ -392,18 +480,31 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersAward'],
                         'inputType' => 'select',
                         'options_callback' => [FirefighterHelper::class, 'getAwardsShortOptions'],
-                        'eval' => ['includeBlankOption' => true, 'chosen' => true, 'style' => 'width:250px']
+                        'eval' => [
+                            'includeBlankOption' => true, 
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                     'membersAwardYear' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersAwardYear'],
                         'inputType' => 'text',
-                        'eval' => ['style' => 'width:50px',]
+                        'eval' => [
+                            'wrapper_style' => 'width:5%', 
+                            'style' => 'width:100%',
+                            ]
                     ],
                 ],
                 'tl_class' => 'clr',
                 'minCount' => 0,
             ],
-            'sql' => "blob NULL"
+            'sql' => "blob NULL",
+            'load_callback' => [
+                [FirefighterHelper::class, 'filterAwardRows'],
+            ],
+            'save_callback' => [
+                [FirefighterHelper::class, 'sanitizeAwardRows'],
+            ],
         ],
         'membersEmail' => [
             'exclude' => true,
@@ -432,7 +533,11 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'search' => false,
             'inputType' => 'text',
-            'eval' => array('maxlength' => 255, 'decodeEntities' => true, 'tl_class' => 'w50'),
+            'eval' => [
+                'maxlength' => 255, 
+                'decodeEntities' => true, 
+                'tl_class' => 'w50',
+                ],
             'sql' => "varchar(255) NOT NULL default ''"
         ],
         'robots' => [
@@ -440,14 +545,21 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'search' => false,
             'inputType' => 'select',
             'options' => ['index,follow', 'index,nofollow', 'noindex,follow', 'noindex,nofollow'],
-            'eval' => ['tl_class' => 'w50', 'includeBlankOption' => true],
+            'eval' => [
+                'tl_class' => 'w50', 
+                'includeBlankOption' => true,
+                ],
             'sql' => "varchar(32) NOT NULL default ''"
         ],
         'description' => [
             'exclude' => true,
             'search' => false,
             'inputType' => 'textarea',
-            'eval' => array('style' => 'height:60px', 'decodeEntities' => true, 'tl_class' => 'clr'),
+            'eval' => [
+                'style' => 'height:60px', 
+                'decodeEntities' => true, 
+                'tl_class' => 'clr',
+                ],
             'sql' => "text NULL"
         ],
         'serpPreview' => [
@@ -458,7 +570,7 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
                 'url_callback' => ['tl_firefighter', 'getSerpUrl'],
                 'title_tag_callback' => ['tl_firefighter', 'getTitleTag'],
                 'titleFields' => ['pageTitle', 'headline'],
-                'descriptionFields' => ['description', 'teaser']
+                'descriptionFields' => ['description', 'teaser'],
             ],
             'sql' => null
         ],
@@ -467,7 +579,11 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'search' => false,
             'inputType' => 'textarea',
-            'eval' => ['rte' => 'tinyMCE', 'helpwizard' => true, 'tl_class' => 'clr'],
+            'eval' => [
+                'rte' => 'tinyMCE', 
+                'helpwizard' => true, 
+                'tl_class' => 'clr',
+                ],
             'explanation' => 'insertTags',
             'sql' => 'mediumtext NULL',
         ],
@@ -479,21 +595,34 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'sorting' => false,
             'flag' => 8,
             'inputType' => 'text',
-            'eval' => ['rgxp' => 'date', 'doNotCopy' => true, 'datepicker' => true, 'tl_class' => 'w50 wizard'],
+            'eval' => [
+                'rgxp' => 'date', 
+                'doNotCopy' => true, 
+                'datepicker' => true, 
+                'tl_class' => 'w50 wizard',
+                ],
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
         'overwriteMeta' => [
             'label' => &$GLOBALS['TL_LANG']['tl_content']['overwriteMeta'],
             'exclude' => true,
             'inputType' => 'checkbox',
-            'eval' => ['submitOnChange' => true, 'tl_class' => 'w50 clr'],
+            'eval' => [
+                'submitOnChange' => true, 
+                'tl_class' => 'w50 clr',
+                ],
             'sql' => ['type' => 'boolean', 'default' => false],
         ],
         'singleSRC' => [
             'label' => &$GLOBALS['TL_LANG']['tl_content']['singleSRC'],
             'exclude' => true,
             'inputType' => 'fileTree',
-            'eval' => ['fieldType' => 'radio', 'filesOnly' => true, 'extensions' => Config::get('validImageTypes'), 'mandatory' => true],
+            'eval' => [
+                'fieldType' => 'radio', 
+                'filesOnly' => true, 
+                'extensions' => Config::get('validImageTypes'), 
+                'mandatory' => true,
+                ],
             'sql' => 'binary(16) NULL',
         ],
         'alt' => [
@@ -501,7 +630,10 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'search' => false,
             'inputType' => 'text',
-            'eval' => ['maxlength' => 255, 'tl_class' => 'w50'],
+            'eval' => [
+                'maxlength' => 255, 
+                'tl_class' => 'w50',
+                ],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
         'imageTitle' => [
@@ -509,7 +641,10 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'search' => false,
             'inputType' => 'text',
-            'eval' => ['maxlength' => 255, 'tl_class' => 'w50'],
+            'eval' => [
+                'maxlength' => 255, 
+                'tl_class' => 'w50',
+                ],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
         'size' => [
@@ -517,7 +652,13 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'inputType' => 'imageSize',
             'reference' => &$GLOBALS['TL_LANG']['MSC'],
-            'eval' => ['rgxp' => 'natural', 'includeBlankOption' => true, 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
+            'eval' => [
+                'rgxp' => 'natural', 
+                'includeBlankOption' => true, 
+                'nospace' => true, 
+                'helpwizard' => true, 
+                'tl_class' => 'w50',
+                ],
             'options_callback' => static function () {
                 return System::getContainer()->get('contao.image.sizes')->getOptionsForUser(BackendUser::getInstance());
             },
@@ -528,14 +669,22 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'search' => false,
             'inputType' => 'text',
-            'eval' => ['rgxp' => 'url', 'decodeEntities' => true, 'maxlength' => 255, 'dcaPicker' => true, 'tl_class' => 'w50 wizard'],
+            'eval' => [
+                'rgxp' => 'url', 
+                'decodeEntities' => true, 
+                'maxlength' => 255, 
+                'dcaPicker' => true, 
+                'tl_class' => 'w50 wizard',
+                ],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
         'fullsize' => [
             'label' => &$GLOBALS['TL_LANG']['tl_content']['fullsize'],
             'exclude' => true,
             'inputType' => 'checkbox',
-            'eval' => ['tl_class' => 'w50 m12'],
+            'eval' => [
+                'tl_class' => 'w50 m12',
+                ],
             'sql' => ['type' => 'boolean', 'default' => false],
         ],
         'caption' => [
@@ -543,7 +692,11 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'search' => false,
             'inputType' => 'text',
-            'eval' => ['maxlength' => 255, 'allowHtml' => true, 'tl_class' => 'w50'],
+            'eval' => [
+                'maxlength' => 255, 
+                'allowHtml' => true, 
+                'tl_class' => 'w50',
+                ],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
         'floating' => [
@@ -552,7 +705,10 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'inputType' => 'radioTable',
             'options' => ['above', 'left', 'right', 'below'],
-            'eval' => ['cols' => 4, 'tl_class' => 'w50'],
+            'eval' => [
+                'cols' => 4, 
+                'tl_class' => 'w50',
+                ],
             'reference' => &$GLOBALS['TL_LANG']['MSC'],
             'sql' => "varchar(12) NOT NULL default ''",
         ],
@@ -564,7 +720,10 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'inputType' => 'radio',
             'options_callback' => ['tl_firefighter', 'getSourceOptions'],
             'reference' => &$GLOBALS['TL_LANG']['tl_firefighter'],
-            'eval' => ['submitOnChange' => true, 'helpwizard' => true],
+            'eval' => [
+                'submitOnChange' => true, 
+                'helpwizard' => true,
+                ],
             'sql' => "varchar(12) NOT NULL default ''",
         ],
         'jumpTo' => [
@@ -572,7 +731,10 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'inputType' => 'pageTree',
             'foreignKey' => 'tl_page.title',
-            'eval' => ['mandatory' => true, 'fieldType' => 'radio'],
+            'eval' => [
+                'mandatory' => true, 
+                'fieldType' => 'radio',
+                ],
             'sql' => "int(10) unsigned NOT NULL default '0'",
             'relation' => ['type' => 'belongsTo', 'load' => 'lazy'],
         ],
@@ -581,7 +743,7 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'inputType' => 'select',
             'options_callback' => ['tl_firefighter', 'getArticleAlias'],
-            'eval' => ['chosen' => true, 'mandatory' => true],
+            'eval' => ['mandatory' => true,],
             'sql' => "int(10) unsigned NOT NULL default '0'",
         ],
         'url' => [
@@ -589,14 +751,19 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'search' => false,
             'inputType' => 'text',
-            'eval' => ['mandatory' => true, 'decodeEntities' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
+            'eval' => [
+                'mandatory' => true, 
+                'decodeEntities' => true, 
+                'maxlength' => 255, 
+                'tl_class' => 'w50',
+                ],
             'sql' => "varchar(255) NOT NULL default ''",
         ],
         'target' => [
             'label' => &$GLOBALS['TL_LANG']['MSC']['target'],
             'exclude' => true,
             'inputType' => 'checkbox',
-            'eval' => ['tl_class' => 'w50 m12'],
+            'eval' => ['tl_class' => 'w50 m12',],
             'sql' => ['type' => 'boolean', 'default' => false],
         ],
         'cssClass' => [
@@ -612,21 +779,29 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'toggle' => true,
             'flag' => DataContainer::SORT_INITIAL_LETTER_ASC,
             'inputType' => 'checkbox',
-            'eval' => ['doNotCopy' => true],
+            'eval' => ['doNotCopy' => true,],
             'sql' => ['type' => 'boolean', 'default' => false],
         ],
         'start' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['start'],
             'exclude' => true,
             'inputType' => 'text',
-            'eval' => ['rgxp' => 'datim', 'datepicker' => true, 'tl_class' => 'w50 wizard'],
+            'eval' => [
+                'rgxp' => 'datim', 
+                'datepicker' => true, 
+                'tl_class' => 'w50 wizard',
+                ],
             'sql' => "varchar(10) NOT NULL default ''",
         ],
         'stop' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['stop'],
             'exclude' => true,
             'inputType' => 'text',
-            'eval' => ['rgxp' => 'datim', 'datepicker' => true, 'tl_class' => 'w50 wizard'],
+            'eval' => [
+                'rgxp' => 'datim', 
+                'datepicker' => true, 
+                'tl_class' => 'w50 wizard',
+                ],
             'sql' => "varchar(10) NOT NULL default ''",
         ],
         'featured' => [
@@ -635,7 +810,10 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'filter' => false,
             'toggle' => true,
             'inputType' => 'checkbox',
-            'eval' => ['tl_class' => 'w50', 'doNotCopy' => true],
+            'eval' => [
+                'tl_class' => 'w50', 
+                'doNotCopy' => true,
+                ],
             'sql' => ['type' => 'boolean', 'default' => false],
         ],
     ],
@@ -654,7 +832,7 @@ class tl_firefighter extends Backend
      *
      * @throws AccessDeniedException
      */
-    public function checkPermission(): void
+    public function checkPermission(DataContainer $dc): void
     {
         if ($this->User->isAdmin) {
             return;
@@ -662,20 +840,20 @@ class tl_firefighter extends Backend
 
         // Set the root IDs
         if (empty($this->User->firefighter) || !is_array($this->User->firefighter)) {
-            $root = array(0);
+            $root = [0];
         } else {
             $root = $this->User->firefighter;
         }
 
-        $id = Input::get('id') !== '' ? Input::get('id') : CURRENT_ID;
+        $currentPid = $dc->currentPid ?? 0;
+        $id = Input::get('id') !== '' ? Input::get('id') : $currentPid;
 
         // Check current action
         switch (Input::get('act')) {
             case 'paste':
             case 'select':
-                // Check CURRENT_ID
-                if (!in_array(CURRENT_ID, $root, true)) {
-                    throw new AccessDeniedException('Not enough permissions to access portfolio archive ID ' . $id . '.');
+                if (!in_array($currentPid, $root, true)) {
+                throw new AccessDeniedException('Not enough permissions to access firefighter archive ID ' . $currentPid . '.');
                 }
                 break;
 
@@ -782,22 +960,7 @@ class tl_firefighter extends Backend
 
         return $result->numRows ? $result->ffname : '';
     }
-/*
-    protected function getDepartmentDetails($homebaseId): string
-    {
-        $result = Database::getInstance()
-            ->prepare("SELECT ffnumber, ffname FROM tl_firefighter_departments WHERE id=?")
-            ->execute($homebaseId);
 
-        return $result->numRows ? $result->ffnumber . ' - ' . $result->ffname : '';
-    }
-
-    public function getGroupHeader($homebaseId, $mode, $field, $row, $dc): string
-    {
-        $departmentDetails = $this->getDepartmentDetails($homebaseId);
-        return '<div class="tl_content_header">' . $departmentDetails . '</div>';
-    }
-*/
     /**
      * Get the short abbreviation of the rank based on the ID.
      *
@@ -819,53 +982,30 @@ class tl_firefighter extends Backend
     }    
 
     /**
-     * Auto-generate the firefighter alias if it has not been set yet.
-     *
-     * @param mixed $varValue
-     *
-     * @param DataContainer $dc
-     * @return string
-     * @throws Exception
-     */
-    public function generateAlias($varValue, DataContainer $dc)
-    {
-        $aliasExists = function (string $alias) use ($dc): bool {
-            return Database::getInstance()
-                    ->prepare("SELECT id FROM tl_firefighter WHERE alias=? AND id!=?")
-                    ->execute($alias, $dc->id)->numRows > 0;
-        };
-
-        // Generate alias if there is none
-        if (!$varValue) {
-            $headline = $this->generateHeadline($dc->activeRecord->headline, $dc);
-            $varValue = System::getContainer()->get('contao.slug')->generate($headline, FirefighterArchiveModel::findByPk($dc->activeRecord->pid)->jumpTo, $aliasExists);
-        } elseif (preg_match('/^[1-9]\d*$/', $varValue)) {
-            throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['aliasNumeric'], $varValue));
-        } elseif ($aliasExists($varValue)) {
-            throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['aliasExists'], $varValue));
-        }
-
-        return $varValue;
-    }
-
-    /**
      * Auto-generate the headline based on the members' details.
      *
      * @param mixed $varValue
      * @param DataContainer $dc
      * @return string
      */
-    public function generateHeadline($varValue, DataContainer $dc)
-    {
-        if ($dc->activeRecord) {
-            $membersFirstname = $dc->activeRecord->membersFirstname;
-            $membersLastname = $dc->activeRecord->membersLastname;
-            $membersRank = $dc->activeRecord->membersRank ? $this->getRankName($dc->activeRecord->membersRank, $dc->activeRecord->membersRankHonory) : '';
 
-            $varValue = sprintf('%s %s %s', $membersRank, $membersFirstname, $membersLastname);
+    public function generateHeadline($varValue, DataContainer $dc): string
+    {
+        $record = $dc->activeRecord;
+
+        if (null === $record) {
+            return (string) $varValue;
         }
 
-        return $varValue;
+        $membersFirstname = trim((string) $record->membersFirstname);
+        $membersLastname = trim((string) $record->membersLastname);
+        $membersRank = '';
+
+        if ($record->membersRank) {
+            $membersRank = trim((string) $this->getRankName($record->membersRank, $record->membersRankHonory));
+        }
+
+        return trim(sprintf('%s %s %s', $membersRank, $membersFirstname, $membersLastname));
     }
 
     /**
@@ -873,50 +1013,33 @@ class tl_firefighter extends Backend
      *
      * @param DataContainer $dc
      */
+
     public function updateHeadlineAndAlias(DataContainer $dc): void
     {
-        if ($dc->activeRecord) {
-            $headline = $this->generateHeadline($dc->activeRecord->headline, $dc);
-
-            Database::getInstance()->prepare("UPDATE tl_firefighter SET headline=? WHERE id=?")
-                ->execute($headline, $dc->id);
-
-            // Re-fetch the active record to get the updated headline
-            $activeRecord = Database::getInstance()->prepare("SELECT * FROM tl_firefighter WHERE id=?")
-                ->execute($dc->id)->fetchAssoc();
-
-            $alias = $this->generateAlias($activeRecord['alias'], $dc);
-
-            Database::getInstance()->prepare("UPDATE tl_firefighter SET alias=? WHERE id=?")
-                ->execute($alias, $dc->id);
+        if (!$dc->activeRecord) {
+            return;
         }
+
+        $headline = $this->generateHeadline('', $dc);
+
+        $aliasExists = function (string $alias) use ($dc): bool {
+            return Database::getInstance()
+                ->prepare("SELECT id FROM tl_firefighter WHERE alias=? AND id!=?")
+                ->execute($alias, $dc->id)
+                ->numRows > 0;
+        };
+
+        $archive = FirefighterArchiveModel::findByPk($dc->activeRecord->pid);
+        $jumpTo = $archive ? $archive->jumpTo : null;
+
+        $alias = System::getContainer()
+            ->get('contao.slug')
+            ->generate($headline, $jumpTo, $aliasExists);
+
+        Database::getInstance()
+            ->prepare("UPDATE tl_firefighter SET headline=?, alias=? WHERE id=?")
+            ->execute($headline, $alias, $dc->id);
     }
-
-    /**
-     * Create a child element for the saved firefighter record.
-     *
-     * @param DataContainer $dc
-     */
-    public function createChildElement(DataContainer $dc): void
-    {
-        if ($dc->activeRecord) {
-            $firefighterId = $dc->activeRecord->id;
-
-            // Check if a child element already exists
-            $existingContent = Database::getInstance()
-                ->prepare("SELECT id FROM tl_content WHERE pid = ? AND ptable = 'tl_firefighter'")
-                ->execute($firefighterId);
-
-            if (!$existingContent->numRows) {
-                // Insert a new child element
-                Database::getInstance()->prepare("
-                    INSERT INTO tl_content (pid, ptable, type, text, tstamp)
-                    VALUES (?, 'tl_firefighter', 'text', '.', ?)
-                ")->execute($firefighterId, time());
-            }
-        }
-    }
-
 
     protected function getRankName($rankId, $rankHonory)
     {
@@ -1029,6 +1152,19 @@ class tl_firefighter extends Backend
         return $arrAlias;
     }
 
+    protected function hasAlexfAccess(string $field): bool
+    {
+        // Neuer Weg (Contao 5)
+        if (System::getContainer()->has('security.helper')) {
+            return System::getContainer()
+                ->get('security.helper')
+                ->isGranted('contao_user.alexf', 'tl_firefighter::' . $field);
+        }
+
+        // Fallback (älterer Stil, z.B. 5.3)
+        return $this->User->hasAccess('tl_firefighter::' . $field, 'alexf');
+    }
+
     /**
      * Add the source options depending on the allowed fields
      *
@@ -1045,12 +1181,12 @@ class tl_firefighter extends Backend
         $arrOptions = ['default'];
 
         // Add the "internal" option
-        if ($this->User->hasAccess('tl_firefighter::jumpTo', 'alexf')) {
+        if ($this->hasAlexfAccess('jumpTo')) {
             $arrOptions[] = 'internal';
         }
 
         // Add the "article" option
-        if ($this->User->hasAccess('tl_firefighter::articleId', 'alexf')) {
+        if ($this->hasAlexfAccess('articleId')) {
             $arrOptions[] = 'article';
         }
 

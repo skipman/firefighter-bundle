@@ -74,7 +74,6 @@ class ModuleFirefighterList extends ModuleFirefighter
         if ($this->firefighter_filter_reset) {
             $this->Template->firefighter_filter_reset = $GLOBALS['TL_LANG']['MSC']['filter_reset'][0];
             $this->Template->firefighter_filter_resetTitle = $GLOBALS['TL_LANG']['MSC']['filter_reset'][1];
-
         }
 
         // Get the selected categories for filtering
@@ -369,7 +368,10 @@ class ModuleFirefighterList extends ModuleFirefighter
             // Select only the first active function
             if (!empty($filteredLocalFunctions)) {
                 $firstFunction = reset($filteredLocalFunctions); // Get the first element
-                $firstFunction['short'] = $this->getFunctionShortName($firstFunction['membersFunctionLocal']);
+                $functionDetails = $this->getFunctionDetails($firstFunction['membersFunctionLocal']);
+
+                $firstFunction['short'] = $functionDetails['short'];
+                $firstFunction['long'] = $functionDetails['long'];
                 $firstFunction['period'] = $firstFunction['membersFunctionLocalPeriod'] ?? '';
 
                 // Set only the first active function in the template
@@ -399,13 +401,17 @@ class ModuleFirefighterList extends ModuleFirefighter
 
             // Select only the first active function
             if (!empty($filteredSectionFunctions)) {
-                $firstFunction = reset($filteredSectionFunctions); // Get the first element
-                $firstFunction['short'] = $this->getFunctionShortName($firstFunction['membersFunctionSection']);
+                $firstFunction = reset($filteredSectionFunctions); // Jetzt korrekt benannt
+                $functionDetails = $this->getFunctionDetails($firstFunction['membersFunctionSection']);
+
+                $firstFunction['short'] = $functionDetails['short'];
+                $firstFunction['long'] = $functionDetails['long'];
                 $firstFunction['period'] = $firstFunction['membersFunctionSectionPeriod'] ?? '';
 
                 // Set only the first active function in the template
                 $objTemplate->membersFunctionSection = [$firstFunction];
             }
+
         }
 
         // Add other item data to the template
@@ -579,20 +585,21 @@ class ModuleFirefighterList extends ModuleFirefighter
         return 'tel:+43' . ltrim($formattedPhone, '0');
     }
 
-    /**
-     * Get the short name of a function based on its ID.
-     *
-     * @param int $functionId
-     *
-     * @return string
-     */
-    protected function getFunctionShortName($functionId): string
+
+    protected function getFunctionDetails($functionId): array
     {
         $function = Database::getInstance()
-            ->prepare("SELECT function_short FROM tl_firefighter_functions WHERE id=?")
+            ->prepare("SELECT function_short, function_long FROM tl_firefighter_functions WHERE id=?")
             ->execute($functionId);
 
-        return $function->numRows ? $function->function_short : '';
+        if ($function->numRows) {
+            return [
+                'short' => $function->function_short,
+                'long' => $function->function_long,
+            ];
+        }
+
+        return ['short' => '', 'long' => ''];
     }
 
     /**

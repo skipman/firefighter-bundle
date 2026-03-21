@@ -17,21 +17,21 @@ use Contao\CoreBundle\Picker\DcaPickerProviderInterface;
 use Contao\CoreBundle\Picker\PickerConfig;
 use Knp\Menu\FactoryInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
  
 class FirefighterPickerProvider extends AbstractInsertTagPickerProvider implements DcaPickerProviderInterface
 {
-    private Security $security;
+    private AuthorizationCheckerInterface $authorizationChecker;
  
     public function __construct(
         FactoryInterface $menuFactory,
         RouterInterface $router,
         ?TranslatorInterface $translator,
-        Security $security)
+        AuthorizationCheckerInterface $authorizationChecker)
     {
-        parent::__construct($menuFactory, $router, $translator); 
-        $this->security = $security;
+        parent::__construct($menuFactory, $router, $translator);
+        $this->authorizationChecker = $authorizationChecker;
     }
  
     public function getName(): string
@@ -41,7 +41,7 @@ class FirefighterPickerProvider extends AbstractInsertTagPickerProvider implemen
  
     public function supportsContext($context): bool
     {
-        return in_array($context, ['firefighter', 'link'], true) && $this->security->isGranted('contao_user.modules', 'firefighter');
+        return in_array($context, ['firefighter', 'link'], true) && $this->authorizationChecker->isGranted('contao_user.modules', 'firefighter');
     }
  
     public function supportsValue(PickerConfig $config): bool

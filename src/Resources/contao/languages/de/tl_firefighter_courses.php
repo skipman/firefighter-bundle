@@ -18,6 +18,6 @@ $GLOBALS['TL_LANG']['tl_firefighter_courses']['delete'] = ['Kurs löschen', 'Kur
 $GLOBALS['TL_LANG']['tl_firefighter_courses']['show'] = ['Kurs Details', 'Details des Kurses ID %s anzeigen'];
 
 // Fields
-$GLOBALS['TL_LANG']['tl_firefighter_courses']['course_legend'] = ['Kurse', 'Kurse verwalten'];
+$GLOBALS['TL_LANG']['tl_firefighter_courses']['course_legend'] = 'Kurse';
 $GLOBALS['TL_LANG']['tl_firefighter_courses']['course_short'] = ['Kurs kurz', 'Abkürzung für den Kurs.'];
 $GLOBALS['TL_LANG']['tl_firefighter_courses']['course_long'] = ['Kurs lang', 'Kursbezeichnung ausgeschrieben.'];

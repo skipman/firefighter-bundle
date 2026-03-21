@@ -1,0 +1,4 @@
+<trans-unit id="propagateToFF" resname="propagateToFF">
+  <source>Propagate to FF</source>
+  <target>Termin auch in FF-Archiven des AFK veröffentlichen</target>
+</trans-unit>

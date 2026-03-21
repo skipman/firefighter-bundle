@@ -78,13 +78,21 @@
          'vehicle_short' => [
              'label' => &$GLOBALS['TL_LANG']['tl_firefighter_vehicles']['vehicle_short'],
              'inputType' => 'text',
-             'eval' => ['mandatory' => true, 'unique' => true, 'maxlength' => 255, 'tl_class' => 'w25'],
+             'eval' => [
+                'mandatory' => true, 
+                'unique' => true, 
+                'maxlength' => 255, 
+                'tl_class' => 'w25',
+             ],
              'sql' => "varchar(255) NOT NULL default ''"
          ],
          'vehicle_long' => [
              'label' => &$GLOBALS['TL_LANG']['tl_firefighter_vehicles']['vehicle_long'],
              'inputType' => 'text',
-             'eval' => ['mandatory' => true, 'tl_class' => 'w50'],
+             'eval' => [
+                'mandatory' => true, 
+                'tl_class' => 'w50',
+             ],
              'sql' => "varchar(255) NOT NULL default ''"
          ]
      ]
