@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
-//use Skipman\FirefighterBundle\ContentElement\FirefighterMembersElement;
 use Skipman\FirefighterBundle\ContentElement\FirefighterResourcesElement;
 use Skipman\FirefighterBundle\ContentElement\FirefighterWebsElement;
 use Skipman\FirefighterBundle\Classes\Firefighter;
@@ -20,14 +24,11 @@ use Skipman\FirefighterBundle\Models\FirefighterArchiveModel;
 use Skipman\FirefighterBundle\Models\FirefighterCategoryModel;
 use Skipman\FirefighterBundle\Modules\ModuleFirefighterReader;
 
-// Register the backend template
-//$GLOBALS['TL_BE']['default'] = 'backend/be_main';
-
 // Register Backend-Modules
 
 $GLOBALS['BE_MOD']['firefighter_settings'] = [
     'firefighter' => [
-        'tables' => ['tl_firefighter_archive', 'tl_firefighter', 'tl_firefighter_category', 'tl_content'],
+        'tables' => ['tl_firefighter_archive', 'tl_firefighter', 'tl_firefighter_category'],
         'icon' => 'bundles/firefighterbundle/flame.svg',
     ],
     'departments' => [
@@ -80,3 +81,4 @@ $GLOBALS['TL_HOOKS']['getSearchablePages'][] = [Firefighter::class, 'getSearchab
  */
 $GLOBALS['TL_PERMISSIONS'][] = 'firefighter';
 $GLOBALS['TL_PERMISSIONS'][] = 'firefighterp';
+$GLOBALS['TL_PERMISSIONS'][] = 'firefightercategories';

@@ -25,8 +25,7 @@
     "contao-manager-plugin": "Skipman\\FirefighterBundle\\ContaoManager\\Plugin",
     "contao": {
       "sources": {
-        "bundles/firefighter": "src/Resources/public",
-        "Resources/contao": "contao"
+        "bundles/firefighter": "src/Resources/public"
       }
     }
   },

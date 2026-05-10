@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 declare(strict_types=1);
 
@@ -15,19 +15,5 @@ declare(strict_types=1);
  * For full license information, please see the LICENSE file.
  */
 
- namespace Skipman\FirefighterBundle\Models;
-
- use Contao\Model;
-
-/**
- * Reads and writes firefighter archive items.
- */
-class FirefighterArchiveModel extends Model
-{
-    /**
-     * Table name.
-     *
-     * @var string
-     */
-    protected static $strTable = 'tl_firefighter_archive';
-}
+$GLOBALS['TL_LANG']['tl_page']['firefighter_support_legend'] = 'Feuerwehr-Web Support';
+$GLOBALS['TL_LANG']['tl_page']['firefighter_support_key'] = ['Support-Schlüssel', 'Optionaler Schlüssel für Zusatzdienste, Support und Servicefunktionen für diese Domain bzw. diesen Startpunkt.'];

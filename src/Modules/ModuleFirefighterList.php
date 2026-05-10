@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
 namespace Skipman\FirefighterBundle\Modules;
@@ -61,6 +66,7 @@ class ModuleFirefighterList extends ModuleFirefighter
         }
 
         return parent::generate();
+            throw new \Exception('TEST');
     }
 
     /**
@@ -82,7 +88,7 @@ class ModuleFirefighterList extends ModuleFirefighter
         $sortedCategories = [];
         if (!empty($selectedCategories)) {
             $objCategories = FirefighterCategoryModel::findMultipleByIds($selectedCategories);
-        
+
             if ($objCategories !== null) {
                 // Hole die Kategorien in einem Array mit ID als Schlüssel
                 $categoriesById = [];
@@ -94,7 +100,7 @@ class ModuleFirefighterList extends ModuleFirefighter
                         ];
                     }
                 }
-        
+
                 // Sortiere die Kategorien nach der Reihenfolge in $selectedCategories
                 foreach ($selectedCategories as $categoryId) {
                     if (isset($categoriesById[$categoryId])) {
@@ -108,14 +114,13 @@ class ModuleFirefighterList extends ModuleFirefighter
         $this->Template->firefightercategories = $sortedCategories;
 
         // Prüfen, ob der Filter "kommando" im Parameter enthalten ist
-        $isKommandoFilter = false;        
+        $isKommandoFilter = false;
         if ($this->filter_firefightercategories) {
             $selectedCategory = Input::get('filter');
-            if (stripos($selectedCategory, 'kommando') !== false) {
+            if (stripos((string) $selectedCategory, 'kommando') !== false) {
                 $isKommandoFilter = true;
             }
         }
-
 
         // Check if group filter should be displayed
         $showGroupFilter = $this->firefighter_filter !== 0;
@@ -131,7 +136,7 @@ class ModuleFirefighterList extends ModuleFirefighter
             $limit = $this->numberOfItems;
         }
 
-        // Handle featured firefighter-items
+        // Handle featured firefighter items
         if ('featured' === $this->firefighter_featured) {
             $blnFeatured = true;
         } elseif ('unfeatured' === $this->firefighter_featured) {
@@ -140,28 +145,10 @@ class ModuleFirefighterList extends ModuleFirefighter
             $blnFeatured = null;
         }
 
-        $arrColumns = ['tl_firefighter.published=?'];
-        $arrValues = ['1'];
-        $arrOptions = [
-            'order' => 'tl_firefighter.membersLastname ASC, tl_firefighter.membersFirstname ASC',
-        ];
-
-        if (!$this->filter_firefightercategories && !empty($limit)) {
-            $arrOptions['limit'] = $limit;
-        }
-
-        // Handle featured/unfeatured items
-        if ('featured' === $this->firefighter_featured || 'unfeatured' === $this->firefighter_featured) {
-            $arrColumns[] = 'tl_firefighter.featured=?';
-            $arrValues[] = 'featured' === $this->firefighter_featured ? '1' : '';
-        }
-
         $arrPids = StringUtil::deserialize($this->firefighter_archives);
-        $arrColumns[] = 'tl_firefighter.pid IN('.implode(',', array_map('\intval', $arrPids)).')';
-
         $arrFirefighterCategoryIds = [];
 
-        // Pre-filter items based on filter_firefightercategories
+        // Pre filter items based on filter_firefightercategories
         if ($this->filter_firefightercategories) {
             $arrFirefighterCategoryIds = $selectedCategories;
         }
@@ -207,10 +194,17 @@ class ModuleFirefighterList extends ModuleFirefighter
             $this->Template->pagination = $objPagination->generate("\n  ");
         }
 
-        $objItems = $this->fetchItems($arrPids, $blnFeatured, ($limit ?: 0), $offset, $arrFirefighterCategoryIds, $isKommandoFilter);
+        $objItems = $this->fetchItems(
+            $arrPids,
+            $blnFeatured,
+            ($limit ?: 0),
+            $offset,
+            $arrFirefighterCategoryIds,
+            $isKommandoFilter
+        );
 
         if (null !== $objItems) {
-            $this->Template->items = $this->parseItems($objItems, false);
+            $this->Template->items = $this->parseItems($objItems, false, $isKommandoFilter);
         }
     }
 
@@ -218,10 +212,8 @@ class ModuleFirefighterList extends ModuleFirefighter
      * Count the total matching items.
      *
      * @param array $firefighterArchives
-     * @param bool $blnFeatured
+     * @param bool  $blnFeatured
      * @param array $arrFirefighterCategories
-     *
-     * @return int
      */
     protected function countItems($firefighterArchives, $blnFeatured, $arrFirefighterCategories): int
     {
@@ -232,82 +224,288 @@ class ModuleFirefighterList extends ModuleFirefighter
      * Fetch the matching items.
      *
      * @param array $firefighterArchives
-     * @param bool $blnFeatured
-     * @param int $limit
-     * @param int $offset
+     * @param bool  $blnFeatured
+     * @param int   $limit
+     * @param int   $offset
      * @param array $arrFirefighterCategories
      *
      * @return Collection|array<FirefighterModel>|FirefighterModel|null
      */
-    
-     protected function fetchItems($firefighterArchives, $blnFeatured, $limit, $offset, $arrFirefighterCategories)
-     {
-         $items = FirefighterModel::findPublishedByPids($firefighterArchives, $blnFeatured, $limit, $offset, [], $arrFirefighterCategories);
-     
-         if (null === $items) {
-             return null;
-         }
-     
-         $arrItems = $items->getModels();
-     
-         // Sortierlogik: Aktive priorisierte Funktionen zuerst, danach alphabetisch
-         usort($arrItems, function ($a, $b) {
-             // Define priority order for specific functions
-             $priorityOrder = ['3' => 1, '4' => 2, '5' => 3, '83' => 4];
-     
-             // Get the function priority for both members
-             $aFunctionPriority = $priorityOrder[$this->getHighestPriorityFunction($a->membersFunctionLocalWizard)] ?? PHP_INT_MAX;
-             $bFunctionPriority = $priorityOrder[$this->getHighestPriorityFunction($b->membersFunctionLocalWizard)] ?? PHP_INT_MAX;
-     
-             // Sort based on function priority
-             if ($aFunctionPriority !== $bFunctionPriority) {
-                 return $aFunctionPriority - $bFunctionPriority;
-             }
-     
-             // If function priority is the same, sort alphabetically by last and first name
-             return strcmp($a->membersLastname, $b->membersLastname) ?: strcmp($a->membersFirstname, $b->membersFirstname);
-         });
-     
-         return new Collection($arrItems, FirefighterModel::getTable());
-     }
-     
-
-    protected function getHighestPriorityFunction($membersFunctionLocalWizard): ?string
+    protected function fetchItems($firefighterArchives, $blnFeatured, $limit, $offset, $arrFirefighterCategories, $isKommandoFilter = false)
     {
-        // Deserialize the function data
-        $functions = StringUtil::deserialize($membersFunctionLocalWizard, true);
-        // Define the priority order
-        $priorityOrder = ['3', '4', '5', '83']; // Example: '3' => KDT, '4' => 1. KDTSTV, etc.
+        // Wichtig: zuerst alle passenden Datensätze holen, dann sortieren, dann offset/limit anwenden
+        $items = FirefighterModel::findPublishedByPids($firefighterArchives, $blnFeatured, 0, 0, [], $arrFirefighterCategories);
 
-        // Iterate through the priority order and check if the function exists
+        if (null === $items) {
+            return null;
+        }
+
+        $arrItems = $items->getModels();
+
+        usort($arrItems, function ($a, $b) {
+            $aPriority = $this->getCombinedCommandPriority($a);
+            $bPriority = $this->getCombinedCommandPriority($b);
+
+            if ($aPriority !== $bPriority) {
+                return $aPriority <=> $bPriority;
+            }
+
+            return strcmp((string) $a->membersLastname, (string) $b->membersLastname)
+                ?: strcmp((string) $a->membersFirstname, (string) $b->membersFirstname);
+        });
+
+        // Pagination erst nach der Sortierung anwenden
+        if ($offset > 0 || $limit > 0) {
+            $arrItems = array_slice($arrItems, $offset, $limit ?: null);
+        }
+
+        return new Collection($arrItems, FirefighterModel::getTable());
+    }
+
+    /**
+     * Ermittelt die Priorität passend zum verwendeten Template.
+     * firefighter_short nutzt lokale Funktionen.
+     * firefighter_short_abschnitt nutzt Abschnittsfunktionen.
+     * firefighter_short_bezirk nutzt Bezirksfunktionen.
+     * firefighter_short_land nutzt Landesfunktionen.
+     */
+    protected function getCombinedCommandPriority($member): int
+    {
+        $template = (string) $this->firefighter_template;
+
+        if (str_contains($template, 'bezirk')) {
+            return $this->getOverlocalPriority($member, 'district');
+        }
+
+        if (str_contains($template, 'land')) {
+            return $this->getOverlocalPriority($member, 'state');
+        }
+
+        if (str_contains($template, 'abschnitt')) {
+            return $this->getOverlocalPriority($member, 'section');
+        }
+
+        return $this->getLocalPriority($member);
+    }
+
+    protected function getLocalPriority($member): int
+    {
+        $localOrder = ['3', '4', '5', '83', '7'];
+
+        $functionId = $this->getHighestPriorityFunctionFromWizard(
+            $member->membersFunctionLocalWizard ?? null,
+            'membersFunctionLocal',
+            'membersFunctionLocalUntilYear',
+            'membersFunctionLocalUntilMonth',
+            $localOrder
+        );
+
+        if ($functionId === null) {
+            return PHP_INT_MAX;
+        }
+
+        $position = array_search($functionId, $localOrder, true);
+
+        return $position !== false ? $position : PHP_INT_MAX;
+    }
+
+    protected function getOverlocalPriority($member, string $level): int
+    {
+        $orders = [
+            'section' => ['61', '62', '82', '86'],
+            'district' => ['65', '66', '128', '96'],
+            'state' => ['71', '72'],
+        ];
+
+        if (!isset($orders[$level])) {
+            return PHP_INT_MAX;
+        }
+
+        $functionId = $this->getHighestPriorityOverlocalFunction(
+            $member->membersFunctionSectionWizard ?? null,
+            $level,
+            $orders[$level]
+        );
+
+        if ($functionId === null) {
+            return PHP_INT_MAX;
+        }
+
+        $position = array_search($functionId, $orders[$level], true);
+
+        return $position !== false ? $position : PHP_INT_MAX;
+    }
+
+    protected function getTemplateFunctionLevel(): ?string
+    {
+        $template = (string) $this->firefighter_template;
+
+        if (str_contains($template, 'bezirk')) {
+            return 'district';
+        }
+
+        if (str_contains($template, 'land')) {
+            return 'state';
+        }
+
+        if (str_contains($template, 'abschnitt')) {
+            return 'section';
+        }
+
+        return null;
+    }
+
+    protected function getFunctionOrderForLevel(?string $level): array
+    {
+        $orders = [
+            'local' => ['3', '4', '5', '83', '7'],
+            'section' => ['61', '62', '82', '86'],
+            'district' => ['65', '66', '128', '96'],
+            'state' => ['71', '72'],
+        ];
+
+        return $orders[$level] ?? [];
+    }
+
+    protected function getHighestPriorityOverlocalFunction($wizardData, string $level, array $priorityOrder): ?string
+    {
+        $functions = StringUtil::deserialize($wizardData, true);
+
+        if (!is_array($functions) || empty($functions)) {
+            return null;
+        }
+
+        $currentYear = (int) date('Y');
+        $currentMonth = (int) date('m');
+
         foreach ($priorityOrder as $priorityFunction) {
             foreach ($functions as $function) {
-                // Check if the function matches the priority and is still active
-                $currentYear = (int) date('Y');
-                $currentMonth = (int) date('m');
+                if ((string) ($function['membersFunctionSection'] ?? '') !== (string) $priorityFunction) {
+                    continue;
+                }
 
-                $endYear = (int) ($function['membersFunctionLocalUntilYear'] ?? 0);
-                $endMonth = (int) ($function['membersFunctionLocalUntilMonth'] ?? 0);
+                if (!$this->isFunctionActive(
+                    $function,
+                    'membersFunctionSectionUntilYear',
+                    'membersFunctionSectionUntilMonth',
+                    $currentYear,
+                    $currentMonth
+                )) {
+                    continue;
+                }
 
-                // If the function is still active (no end date or end date in the future)
-                if ($function['membersFunctionLocal'] === $priorityFunction &&
-                    ($endYear === 0 || ($endYear > $currentYear || ($endYear === $currentYear && $endMonth >= $currentMonth)))) {
-                    return $priorityFunction; // Return the first matching active priority function
+                if ($this->getFunctionLevel($priorityFunction) === $level) {
+                    return (string) $priorityFunction;
                 }
             }
         }
 
-        // Return null if no active priority function is found
         return null;
     }
 
-    
+    protected function getFunctionLevel($functionId): string
+    {
+        $result = Database::getInstance()
+            ->prepare("SELECT function_level FROM tl_firefighter_functions WHERE id=? AND function_overlocal='1'")
+            ->execute($functionId);
+
+        if ($result->numRows > 0) {
+            return (string) $result->function_level;
+        }
+
+        return '';
+    }
+
+    protected function isFunctionActive(
+        array $function,
+        string $yearKey,
+        string $monthKey,
+        int $currentYear,
+        int $currentMonth
+    ): bool {
+        $endYear = (int) ($function[$yearKey] ?? 0);
+        $endMonth = (int) ($function[$monthKey] ?? 0);
+
+        return (
+            $endYear === 0
+            || $endYear > $currentYear
+            || ($endYear === $currentYear && ($endMonth === 0 || $endMonth >= $currentMonth))
+        );
+    }
+
+    /**
+     * Liefert die erste aktive Funktion aus einem Wizard gemäß Prioritätsreihenfolge.
+     */
+    protected function getHighestPriorityFunctionFromWizard(
+        $wizardData,
+        string $functionKey,
+        string $yearKey,
+        string $monthKey,
+        array $priorityOrder
+    ): ?string {
+        $functions = StringUtil::deserialize($wizardData, true);
+
+        if (!is_array($functions) || empty($functions)) {
+            return null;
+        }
+
+        $currentYear = (int) date('Y');
+        $currentMonth = (int) date('m');
+
+        foreach ($priorityOrder as $priorityFunction) {
+            foreach ($functions as $function) {
+                if (!isset($function[$functionKey])) {
+                    continue;
+                }
+
+                if ((string) $function[$functionKey] !== (string) $priorityFunction) {
+                    continue;
+                }
+
+                $endYear = (int) ($function[$yearKey] ?? 0);
+                $endMonth = (int) ($function[$monthKey] ?? 0);
+
+                $isActive = (
+                    $endYear === 0
+                    || $endYear > $currentYear
+                    || ($endYear === $currentYear && $endMonth >= $currentMonth)
+                );
+
+                if ($isActive) {
+                    return (string) $priorityFunction;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Wählt aus aktiven Funktionen die passende Funktion anhand der Priorität.
+     * Falls keine der Funktionen in der Prioritätsliste vorkommt, wird die erste aktive Funktion verwendet.
+     */
+    protected function getPrioritizedActiveFunction(array $functions, string $functionKey, array $priorityOrder): ?array
+    {
+        if (empty($functions)) {
+            return null;
+        }
+
+        foreach ($priorityOrder as $priorityId) {
+            foreach ($functions as $function) {
+                if ((string) ($function[$functionKey] ?? '') === (string) $priorityId) {
+                    return $function;
+                }
+            }
+        }
+
+        return reset($functions) ?: null;
+    }
 
     /**
      * Parse the items and return them as array.
      *
      * @param Collection|FirefighterModel[] $objItems
-     * @param bool $blnAddArchive
+     * @param bool                          $blnAddArchive
      *
      * @return array
      */
@@ -322,27 +520,24 @@ class ModuleFirefighterList extends ModuleFirefighter
         return $arrItems;
     }
 
- 
     /**
      * Parse a single item and return it as string.
      *
      * @param FirefighterModel $objItem
-     * @param bool $blnAddArchive
-     * @param string $strClass
-     * @param int $intCount
-     *
-     * @return string
+     * @param bool             $blnAddArchive
+     * @param string           $strClass
+     * @param int              $intCount
      */
     protected function parseItem($objItem, $blnAddArchive = false, $strClass = '', $intCount = 0, $isKommandoFilter = false): string
     {
-        global $objPage; // Ensure that the global $objPage is accessible
+        global $objPage;
         $objTemplate = new FrontendTemplate($this->firefighter_template);
         $objTemplate->setData($objItem->row());
 
-        // check if catecory is 'kommando'
+        // check if category is 'kommando'
         if ($isKommandoFilter) {
-            $highestPriorityFunction = $this->getHighestPriorityFunction($objItem->membersFunctionLocalWizard);
-            $objTemplate->highlightFunction = $highestPriorityFunction ? "Kommando-Rang: {$highestPriorityFunction}" : null;
+            $priority = $this->getCombinedCommandPriority($objItem);
+            $objTemplate->highlightFunction = $priority !== PHP_INT_MAX ? 'Kommando Rang aktiv' : null;
         }
 
         // Get the local functions
@@ -357,29 +552,35 @@ class ModuleFirefighterList extends ModuleFirefighter
                     $endYear = (int) ($function['membersFunctionLocalUntilYear'] ?? 0);
                     $endMonth = (int) ($function['membersFunctionLocalUntilMonth'] ?? 1);
 
-                    // Check if the function has ended
                     if ($endYear < $currentYear || ($endYear === $currentYear && $endMonth < $currentMonth)) {
-                        return false; // Exclude this function
+                        return false;
                     }
                 }
-                return true; // Include active functions
+
+                return true;
             });
 
-            // Select only the first active function
             if (!empty($filteredLocalFunctions)) {
-                $firstFunction = reset($filteredLocalFunctions); // Get the first element
-                $functionDetails = $this->getFunctionDetails($firstFunction['membersFunctionLocal']);
+                $localPriorityOrder = ['3', '4', '5', '83', '7'];
+                $selectedFunction = $this->getPrioritizedActiveFunction(
+                    $filteredLocalFunctions,
+                    'membersFunctionLocal',
+                    $localPriorityOrder
+                );
 
-                $firstFunction['short'] = $functionDetails['short'];
-                $firstFunction['long'] = $functionDetails['long'];
-                $firstFunction['period'] = $firstFunction['membersFunctionLocalPeriod'] ?? '';
+                if ($selectedFunction !== null) {
+                    $functionDetails = $this->getFunctionDetails($selectedFunction['membersFunctionLocal']);
 
-                // Set only the first active function in the template
-                $objTemplate->membersFunctionLocal = [$firstFunction];
+                    $selectedFunction['short'] = $functionDetails['short'];
+                    $selectedFunction['long'] = $functionDetails['long'];
+                    $selectedFunction['period'] = $selectedFunction['membersFunctionLocalPeriod'] ?? '';
+
+                    $objTemplate->membersFunctionLocal = [$selectedFunction];
+                }
             }
         }
 
-        // Get the section functions
+        // Get the section / supra local functions
         $sectionFunctions = StringUtil::deserialize($objItem->membersFunctionSectionWizard, true);
         if (is_array($sectionFunctions) && !empty($sectionFunctions)) {
             // Filter the functions to exclude those with a past end date
@@ -391,27 +592,48 @@ class ModuleFirefighterList extends ModuleFirefighter
                     $endYear = (int) ($function['membersFunctionSectionUntilYear'] ?? 0);
                     $endMonth = (int) ($function['membersFunctionSectionUntilMonth'] ?? 1);
 
-                    // Check if the function has ended
                     if ($endYear < $currentYear || ($endYear === $currentYear && $endMonth < $currentMonth)) {
-                        return false; // Exclude this function
+                        return false;
                     }
                 }
-                return true; // Include active functions
+
+                return true;
             });
 
-            // Select only the first active function
             if (!empty($filteredSectionFunctions)) {
-                $firstFunction = reset($filteredSectionFunctions); // Jetzt korrekt benannt
-                $functionDetails = $this->getFunctionDetails($firstFunction['membersFunctionSection']);
+                $templateLevel = $this->getTemplateFunctionLevel();
+                $priorityOrder = $this->getFunctionOrderForLevel($templateLevel);
+                $selectedFunction = null;
 
-                $firstFunction['short'] = $functionDetails['short'];
-                $firstFunction['long'] = $functionDetails['long'];
-                $firstFunction['period'] = $firstFunction['membersFunctionSectionPeriod'] ?? '';
+                if ($templateLevel !== null && !empty($priorityOrder)) {
+                    foreach ($priorityOrder as $priorityId) {
+                        foreach ($filteredSectionFunctions as $function) {
+                            if ((string) ($function['membersFunctionSection'] ?? '') !== (string) $priorityId) {
+                                continue;
+                            }
 
-                // Set only the first active function in the template
-                $objTemplate->membersFunctionSection = [$firstFunction];
+                            if ($this->getFunctionLevel($priorityId) === $templateLevel) {
+                                $selectedFunction = $function;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+
+                if ($selectedFunction === null) {
+                    $selectedFunction = reset($filteredSectionFunctions) ?: null;
+                }
+
+                if ($selectedFunction !== null) {
+                    $functionDetails = $this->getFunctionDetails($selectedFunction['membersFunctionSection']);
+
+                    $selectedFunction['short'] = $functionDetails['short'];
+                    $selectedFunction['long'] = $functionDetails['long'];
+                    $selectedFunction['period'] = $selectedFunction['membersFunctionSectionPeriod'] ?? '';
+
+                    $objTemplate->membersFunctionSection = [$selectedFunction];
+                }
             }
-
         }
 
         // Add other item data to the template
@@ -440,8 +662,9 @@ class ModuleFirefighterList extends ModuleFirefighter
         $objTemplate->membersPhoneFormatted = $this->formatPhoneNumber($objItem->membersPhone);
 
         if ($objItem->membersRank) {
-            $result = Database::getInstance()->prepare("SELECT rank_short, rank_long, singleSRC FROM tl_firefighter_ranks WHERE id=?")
-                                            ->execute($objItem->membersRank);
+            $result = Database::getInstance()
+                ->prepare("SELECT rank_short, rank_long, singleSRC FROM tl_firefighter_ranks WHERE id=?")
+                ->execute($objItem->membersRank);
 
             if ($result->numRows > 0) {
                 $rankShort = $result->rank_short;
@@ -477,8 +700,7 @@ class ModuleFirefighterList extends ModuleFirefighter
         // Display the "read more" button for external/article links
         if ('default' !== $objItem->source) {
             $objTemplate->text = true;
-        } // Compile the firefighter text
-        else {
+        } else {
             $objElement = ContentModel::findPublishedByPidAndTable($objItem->id, 'tl_firefighter');
 
             if (null !== $objElement) {
@@ -548,18 +770,15 @@ class ModuleFirefighterList extends ModuleFirefighter
 
                 $figure?->applyLegacyTemplateData($objTemplate);
 
-                // Link to the firefighter reader if no image link has been defined (see #30)
+                // Link to the firefighter reader if no image link has been defined
                 if (!$objTemplate->fullsize && !$objTemplate->imageUrl && $objTemplate->text) {
-                    // Unset the image title attribute
                     $picture = $objTemplate->picture;
                     unset($picture['title']);
                     $objTemplate->picture = $picture;
 
-                    // Link to the firefighter reader
                     $objTemplate->href = $objTemplate->link;
                     $objTemplate->linkTitle = StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $objItem->headline), true);
 
-                    // If the external link is opened in a new window, open the image link in a new window, too
                     if ('external' === $objTemplate->source && $objTemplate->target) {
                         $objTemplate->attributes .= ' target="_blank"';
                     }
@@ -571,20 +790,15 @@ class ModuleFirefighterList extends ModuleFirefighter
     }
 
     /**
-     * Format phone number to remove all non-digit characters and add the international dialing code.
+     * Format phone number to remove all non digit characters and add the international dialing code.
      *
      * @param string $phoneNumber
-     *
-     * @return string
      */
     protected function formatPhoneNumber($phoneNumber): string
     {
-        // Remove all non-digit characters
         $formattedPhone = preg_replace('/\D/', '', $phoneNumber);
-        // Remove leading zero and add international dialing code
-        return 'tel:+43' . ltrim($formattedPhone, '0');
+        return 'tel:+43' . ltrim((string) $formattedPhone, '0');
     }
-
 
     protected function getFunctionDetails($functionId): array
     {
@@ -606,8 +820,6 @@ class ModuleFirefighterList extends ModuleFirefighter
      * Fetch homebase details from the database.
      *
      * @param int $homebaseId
-     *
-     * @return array
      */
     protected function getHomebaseDetails($homebaseId): array
     {

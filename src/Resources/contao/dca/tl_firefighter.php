@@ -1,13 +1,18 @@
-<?php declare(strict_types=1);
+<?php 
+
+declare(strict_types=1);
 
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
 use Contao\Image;
@@ -256,8 +261,11 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'exclude' => true,
             'filter' => true,
             'inputType' => 'select',
-            'foreignKey' => 'tl_firefighter_category.title',
+            'options_callback' => [FirefighterHelper::class, 'getAllowedFirefighterCategoryOptions'],
             'eval' => ['multiple' => true, 'tl_class' => 'w50', 'chosen' => true,],
+            'save_callback' => [
+                [FirefighterHelper::class, 'filterAllowedFirefighterCategories'],
+            ],
             'sql' => 'blob NULL',
         ],         
         'addImage' => [
@@ -838,28 +846,28 @@ class tl_firefighter extends Backend
             return;
         }
 
-        // Set the root IDs
         if (empty($this->User->firefighter) || !is_array($this->User->firefighter)) {
             $root = [0];
         } else {
-            $root = $this->User->firefighter;
+            $root = array_map('intval', $this->User->firefighter);
         }
 
-        $currentPid = $dc->currentPid ?? 0;
-        $id = Input::get('id') !== '' ? Input::get('id') : $currentPid;
+        $currentPid = (int) ($dc->currentPid ?? 0);
+        $id = (int) (Input::get('id') !== '' ? Input::get('id') : $currentPid);
 
-        // Check current action
         switch (Input::get('act')) {
             case 'paste':
             case 'select':
                 if (!in_array($currentPid, $root, true)) {
-                throw new AccessDeniedException('Not enough permissions to access firefighter archive ID ' . $currentPid . '.');
+                    throw new AccessDeniedException('Not enough permissions to access firefighter archive ID ' . $currentPid . '.');
                 }
                 break;
 
             case 'create':
-                if (!Input::get('pid') || !in_array(Input::get('pid'), $root, true)) {
-                    throw new AccessDeniedException('Not enough permissions to create firefighter items in firefighter archive ID ' . Input::get('pid') . '.');
+                $pid = (int) Input::get('pid');
+
+                if (!$pid || !in_array($pid, $root, true)) {
+                    throw new AccessDeniedException('Not enough permissions to create firefighter items in firefighter archive ID ' . $pid . '.');
                 }
                 break;
 
@@ -869,21 +877,21 @@ class tl_firefighter extends Backend
                     $objArchive = Database::getInstance()
                         ->prepare("SELECT pid FROM tl_firefighter WHERE id=?")
                         ->limit(1)
-                        ->execute(Input::get('pid'));
+                        ->execute((int) Input::get('pid'));
 
                     if ($objArchive->numRows < 1) {
-                        throw new AccessDeniedException('Invalid firefighter item ID ' . Input::get('pid') . '.');
+                        throw new AccessDeniedException('Invalid firefighter item ID ' . (int) Input::get('pid') . '.');
                     }
 
-                    $pid = $objArchive->pid;
+                    $pid = (int) $objArchive->pid;
                 } else {
-                    $pid = Input::get('pid');
+                    $pid = (int) Input::get('pid');
                 }
 
                 if (!in_array($pid, $root, true)) {
                     throw new AccessDeniedException('Not enough permissions to ' . Input::get('act') . ' firefighter item ID ' . $id . ' to firefighter archive ID ' . $pid . '.');
                 }
-            // no break
+                // no break
 
             case 'edit':
             case 'show':
@@ -899,7 +907,7 @@ class tl_firefighter extends Backend
                     throw new AccessDeniedException('Invalid firefighter item ID ' . $id . '.');
                 }
 
-                if (!in_array($objArchive->pid, $root, true)) {
+                if (!in_array((int) $objArchive->pid, $root, true)) {
                     throw new AccessDeniedException('Not enough permissions to ' . Input::get('act') . ' firefighter item ID ' . $id . ' of firefighter archive ID ' . $objArchive->pid . '.');
                 }
                 break;
@@ -921,7 +929,7 @@ class tl_firefighter extends Backend
                 $objSession = System::getContainer()->get('request_stack')->getSession();
 
                 $session = $objSession->all();
-                $session['CURRENT']['IDS'] = array_intersect((array)$session['CURRENT']['IDS'], $objArchive->fetchEach('id'));
+                $session['CURRENT']['IDS'] = array_intersect((array) ($session['CURRENT']['IDS'] ?? []), $objArchive->fetchEach('id'));
                 $objSession->replace($session);
                 break;
 
@@ -1161,7 +1169,7 @@ class tl_firefighter extends Backend
                 ->isGranted('contao_user.alexf', 'tl_firefighter::' . $field);
         }
 
-        // Fallback (älterer Stil, z.B. 5.3)
+        // Fallback (Contao 5.3)
         return $this->User->hasAccess('tl_firefighter::' . $field, 'alexf');
     }
 

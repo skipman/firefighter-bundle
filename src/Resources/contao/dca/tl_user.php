@@ -1,40 +1,56 @@
-<?php declare(strict_types=1);
+<?php 
+
+declare(strict_types=1);
 
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
- use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Skipman\FirefighterBundle\Helper\FirefighterHelper;
 
- // Extend the default palettes
- PaletteManipulator::create()
-     ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
-     ->addField(['firefighter', 'firefighterp'], 'firefighter_legend', PaletteManipulator::POSITION_APPEND)
-     ->applyToPalette('extend', 'tl_user')
-     ->applyToPalette('custom', 'tl_user')
- ;
+// Extend the default palettes
+PaletteManipulator::create()
+    ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
+    ->addField(['firefighter', 'firefighterp'], 'firefighter_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('extend', 'tl_user')
+    ->applyToPalette('custom', 'tl_user')
+;
  
- // Add fields to tl_user
- $GLOBALS['TL_DCA']['tl_user']['fields']['firefighter'] = [
-     'exclude' => true,
-     'inputType' => 'checkbox',
-     'foreignKey' => 'tl_firefighter_archive.title',
-     'eval' => ['multiple' => true],
-     'sql' => 'blob NULL',
- ];
+// Add fields to tl_user
+$GLOBALS['TL_DCA']['tl_user']['fields']['firefighter'] = [
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'foreignKey' => 'tl_firefighter_archive.title',
+    'eval' => ['multiple' => true],
+    'sql' => 'blob NULL',
+];
  
- $GLOBALS['TL_DCA']['tl_user']['fields']['firefighterp'] = [
-     'exclude' => true,
-     'inputType' => 'checkbox',
-     'options' => ['create', 'delete'],
-     'reference' => &$GLOBALS['TL_LANG']['MSC'],
-     'eval' => ['multiple' => true],
-     'sql' => 'blob NULL',
- ];
+$GLOBALS['TL_DCA']['tl_user']['fields']['firefighterp'] = [
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'options' => ['create', 'delete'],
+    'reference' => &$GLOBALS['TL_LANG']['MSC'],
+    'eval' => ['multiple' => true],
+    'sql' => 'blob NULL',
+];
  
+$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] .= ';{firefighter_legend},firefightercategories';
+
+$GLOBALS['TL_DCA']['tl_user']['fields']['firefightercategories'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_user']['firefightercategories'],
+    'exclude' => true,
+    'inputType' => 'checkboxWizard',
+    'options_callback' => [FirefighterHelper::class, 'getFirefighterCategoryOptions'],
+    'eval' => ['multiple' => true],
+    'sql' => 'blob NULL',
+];

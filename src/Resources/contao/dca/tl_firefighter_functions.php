@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
 use Contao\DC_Table;
@@ -28,7 +33,7 @@ $GLOBALS['TL_DCA']['tl_firefighter_functions'] = [
             'mode' => 1,
             'fields' => ['function_short'],
             'flag' => 1,
-            'panelLayout' => 'search,limit'
+            'panelLayout' => 'filter,search,limit'
         ],
         'label' => [
             'fields' => ['function_short','function_long'],
@@ -90,11 +95,31 @@ $GLOBALS['TL_DCA']['tl_firefighter_functions'] = [
         'function_overlocal' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter_functions']['function_overlocal'],
             'inputType' => 'checkbox',
-            'eval' => ['tl_class' => 'w25 m12', 'mandatory' => false], 
+            'filter' => true,
+            'eval' => ['tl_class' => 'w25 m12', 'mandatory' => false, 'submitOnChange' => true], 
             'sql' => ['type' => 'boolean', 'default' => false]
-        ]
+        ],
+        'function_level' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_firefighter_functions']['function_level'],
+            'inputType' => 'radio',
+            'filter' => true,
+            'options' => ['section', 'district', 'state', 'federal'],
+            'reference' => &$GLOBALS['TL_LANG']['tl_firefighter_functions']['function_level_options'],
+            'eval' => [
+                'tl_class' => 'w50',
+                'includeBlankOption' => true,
+            ],
+            'save_callback' => [
+                ['Skipman\\FirefighterBundle\\Helper\\FirefighterHelper', 'validateFunctionLevel'],
+            ],
+            'sql' => ['type' => 'string', 'length' => 16, 'default' => ''],
+        ],
     ],
     'palettes' => [
+        '__selector__' => ['function_overlocal'],
         'default' => '{function_legend},function_short,function_long,function_overlocal'
+    ],
+    'subpalettes' => [
+        'function_overlocal' => 'function_level',
     ],
 ];

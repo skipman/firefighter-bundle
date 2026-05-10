@@ -15,19 +15,14 @@ declare(strict_types=1);
  * For full license information, please see the LICENSE file.
  */
 
- namespace Skipman\FirefighterBundle\Models;
+$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{firefighter_support_legend},firefighter_support_key';
 
- use Contao\Model;
-
-/**
- * Reads and writes firefighter archive items.
- */
-class FirefighterArchiveModel extends Model
-{
-    /**
-     * Table name.
-     *
-     * @var string
-     */
-    protected static $strTable = 'tl_firefighter_archive';
-}
+$GLOBALS['TL_DCA']['tl_settings']['fields']['firefighter_support_key'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_settings']['firefighter_support_key'],
+    'inputType' => 'text',
+    'eval' => [
+        'tl_class' => 'w50',
+        'maxlength' => 128,
+        'decodeEntities' => true,
+    ],
+];

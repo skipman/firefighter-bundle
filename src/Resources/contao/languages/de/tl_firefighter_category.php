@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
 /*
@@ -19,6 +22,12 @@ $GLOBALS['TL_LANG']['tl_firefighter_category']['title']             = ['Titel', 
 $GLOBALS['TL_LANG']['tl_firefighter_category']['alias']             = ['FF-Mitglieder-Gruppen-Alias', 'Der Gruppen-Alias ist eine eindeutige Referenz, die anstelle der numerischen ID aufgerufen werden kann.'];
 $GLOBALS['TL_LANG']['tl_firefighter_category']['simplifiedTitle']   = ['Kurzform', 'Vereinfachten Gruppennamen (Kommando, Chargen, Aktive, ...) eingeben'];
 $GLOBALS['TL_LANG']['tl_firefighter_category']['published']         = ['Gruppe veröffentlichen', 'FF-Mitglieder-Gruppe veröffentlichen.'];
+
+$GLOBALS['TL_LANG']['tl_firefighter_category']['scopeLevel'] = ['Ebene', 'Lege fest, auf welcher organisatorischen Ebene diese Gruppe vergeben werden darf.'];
+$GLOBALS['TL_LANG']['tl_firefighter_category']['scopeLevelOptions']['local'] = 'Feuerwehr';
+$GLOBALS['TL_LANG']['tl_firefighter_category']['scopeLevelOptions']['section'] = 'Abschnitt';
+$GLOBALS['TL_LANG']['tl_firefighter_category']['scopeLevelOptions']['district'] = 'Bezirk';
+$GLOBALS['TL_LANG']['tl_firefighter_category']['departmentId'] = ['Dienststelle', 'Optional die zugehörige Feuerwehr oder übergeordnete Dienststelle.'];
 
 /*
  * Legends
@@ -40,3 +49,4 @@ $GLOBALS['TL_LANG']['tl_firefighter_category']['delete'] = ['Gruppe löschen', '
 $GLOBALS['TL_LANG']['tl_firefighter_category']['toggle'] = ['Gruppe veröffentlichen/unveröffentlichen', 'Gruppe ID %s veröffentlichen/unveröffentlichen'];
 $GLOBALS['TL_LANG']['tl_firefighter_category']['pasteafter'] = ['Einfügen nach', 'Nach Gruppe ID %s einfügen'];
 $GLOBALS['TL_LANG']['tl_firefighter_category']['pasteinto'] = ['Einfügen in', 'In Gruppe ID %s einfügen'];
+

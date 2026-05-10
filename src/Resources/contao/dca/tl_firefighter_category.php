@@ -1,13 +1,18 @@
-<?php declare(strict_types=1);
+<?php 
+
+declare(strict_types=1);
 
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
 use Contao\DC_Table;
@@ -82,7 +87,7 @@ $GLOBALS['TL_DCA']['tl_firefighter_category'] = [
     ],
 
     'palettes' => [
-        'default' => '{title_legend},title,alias,simplifiedTitle,frontendTitle,cssClass;{modules_legend:hide},hideInList,hideInReader,excludeInRelated;{redirect_legend:hide},jumpTo;{publish_legend},published',
+        'default' => '{title_legend},title,alias,simplifiedTitle,scopeLevel,departmentId,frontendTitle,cssClass;{modules_legend:hide},hideInList,hideInReader,excludeInRelated;{redirect_legend:hide},jumpTo;{publish_legend},published',
     ],
 
     'fields' => [
@@ -122,6 +127,23 @@ $GLOBALS['TL_DCA']['tl_firefighter_category'] = [
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
             'sql' => "varchar(255) NOT NULL default ''",
+        ],
+        'scopeLevel' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_firefighter_category']['scopeLevel'],
+            'exclude' => true,
+            'inputType' => 'select',
+            'options' => ['local', 'section', 'district'],
+            'reference' => &$GLOBALS['TL_LANG']['tl_firefighter_category']['scopeLevelOptions'],
+            'eval' => ['mandatory' => true, 'includeBlankOption' => true, 'tl_class' => 'w50'],
+            'sql' => "varchar(16) NOT NULL default ''",
+        ],
+        'departmentId' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_firefighter_category']['departmentId'],
+            'exclude' => true,
+            'inputType' => 'select',
+            'foreignKey' => 'tl_firefighter_departments.ffname',
+            'eval' => ['includeBlankOption' => true, 'tl_class' => 'w50'],
+            'sql' => "int(10) unsigned NULL",
         ],
         'published' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter_category']['published'],

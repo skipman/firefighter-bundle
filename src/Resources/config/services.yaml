@@ -12,6 +12,4 @@ services:
 
     Skipman\FirefighterBundle\Picker\FirefighterPickerProvider:
         tags:
-            - { name: contao.picker_provider } 
-
-    
+            - { name: contao.picker_provider }

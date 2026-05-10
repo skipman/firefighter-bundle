@@ -1,19 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Firefighter Bundle for Contao Open Source CMS.
- * 
- * (c) Ronald Boda 2022 <info@coboda.at>
- * @license GPL-3.0-or-later
- * For the full copyright and license information,
- * please view the LICENSE file that was distributed with this source code.
- * @link https://github.com/skipman/firefighter-bundle
+ *
+ * (c) Ronald Boda 2022-2026 <info@coboda.at>
+ *
+ * This software is licensed under the GNU General Public License v3.0 or later.
+ *
+ * Commercial services (such as support, hosted services, or extended features)
+ * may require a separate agreement.
+ *
+ * For full license information, please see the LICENSE file.
  */
 
 namespace Skipman\FirefighterBundle\Helper;
 
+use Contao\BackendUser;
+use Contao\DataContainer;
 use Contao\Database;
 use Contao\StringUtil;
+use Contao\Input;
 
 class FirefighterHelper
 {
@@ -301,6 +309,115 @@ class FirefighterHelper
         }));
     }
 
+    public static function getFirefighterCategoryOptions(): array
+    {
+        $options = [];
+        $result = Database::getInstance()
+            ->execute("SELECT id, title FROM tl_firefighter_category ORDER BY title ASC");
+
+        while ($result->next()) {
+            $options[$result->id] = $result->title;
+        }
+
+        return $options;
+    }
+     /**
+     * @param DataContainer|null $dc
+     */
+    public static function getAllowedFirefighterCategoryOptions(DataContainer $dc = null): array
+    {
+        $user = BackendUser::getInstance();
+
+        if ($user->isAdmin) {
+            return self::getFirefighterCategoryOptions();
+        }
+
+        $allowed = array_map(
+            'intval',
+            StringUtil::deserialize($user->firefightercategories, true)
+        );
+
+        $selected = [];
+
+        if (null !== $dc && null !== $dc->activeRecord) {
+            $selected = array_map(
+                'intval',
+                StringUtil::deserialize($dc->activeRecord->firefightercategories, true)
+            );
+        }
+
+        $visible = array_values(array_unique(array_merge($allowed, $selected)));
+
+        if (empty($visible)) {
+            return [];
+        }
+
+        $options = [];
+        $result = Database::getInstance()
+            ->execute("SELECT id, title FROM tl_firefighter_category ORDER BY title ASC");
+
+        while ($result->next()) {
+            $id = (int) $result->id;
+
+            if (!in_array($id, $visible, true)) {
+                continue;
+            }
+
+            $label = $result->title;
+
+            if (!in_array($id, $allowed, true) && in_array($id, $selected, true)) {
+                $label .= ' [übergeordnet vergeben]';
+            }
+
+            $options[$id] = $label;
+        }
+
+        return $options;
+    }
+
+    public static function filterAllowedFirefighterCategories($value, DataContainer $dc = null): array
+    {
+        $user = BackendUser::getInstance();
+
+        $selected = array_map(
+            'intval',
+            StringUtil::deserialize($value, true)
+        );
+
+        if ($user->isAdmin) {
+            return array_values(array_unique($selected));
+        }
+
+        $allowed = array_map(
+            'intval',
+            StringUtil::deserialize($user->firefightercategories, true)
+        );
+
+        $existing = [];
+
+        if (null !== $dc && null !== $dc->activeRecord) {
+            $existing = array_map(
+                'intval',
+                StringUtil::deserialize($dc->activeRecord->firefightercategories, true)
+            );
+        }
+
+        $allowedSelected = array_values(array_intersect($selected, $allowed));
+        $protectedExisting = array_values(array_diff($existing, $allowed));
+
+        return array_values(array_unique(array_merge($allowedSelected, $protectedExisting)));
+    }
+
+    public function validateFunctionLevel($value, DataContainer $dc)
+    {
+        $functionOverlocal = Input::post('function_overlocal');
+
+        if ($functionOverlocal && empty($value)) {
+            throw new \Exception('Bitte wählen Sie eine Ebene für die überörtliche Funktion aus.');
+        }
+
+        return $value;
+        }
 
 
 }
