@@ -52,7 +52,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['firefighterDetails'] = [
                 'label' => &$GLOBALS['TL_LANG']['tl_content']['vehicles'],
                 'inputType' => 'checkboxWizard',
                 'options_callback' => [FirefighterHelper::class, 'getVehiclesByDepartment'],
-                'eval' => ['multiple' => true, 'style' => 'width:200px float:left']
+                'eval' => ['multiple' => true,]
             ],
             'team' => [
                 'label' => &$GLOBALS['TL_LANG']['tl_content']['team'],

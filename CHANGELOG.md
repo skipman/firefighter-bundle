@@ -3,6 +3,14 @@
 Alle wichtigen Änderungen an diesem Projekt werden hier dokumentiert.
 
 ---
+## [1.0.1] - 2026-05-14
+
+### Fixed
+- Pflichtfeldlogik für Feuerwehr.Hierarchien korrigiert
+- Pflichtfelder für BFK / AFK / FF und BTF validiert und vereinheitlicht
+- Darstellung der Fahrzeugauswahl im Backend unter Contao 5.7 korrigiert
+- Backend.Asset.Einbindung für Bundle.CSS modernisiert
+
 
 ## [1.0.0] - 2026-05-06
 

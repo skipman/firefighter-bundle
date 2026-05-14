@@ -1,0 +1,4 @@
+contao:
+  backend:
+    custom_css:
+      - bundles/firefighter/css/backend.css
