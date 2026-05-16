@@ -3,6 +3,13 @@
 Alle wichtigen Änderungen an diesem Projekt werden hier dokumentiert.
 
 ---
+
+## [1.0.2] - 2026-05-16
+
+### Fixed
+- Entfernung veraltetes Backend-Template Override (`be_main.html5`)
+- Bereinigung nicht benötigter Core-Asset-Einbindungen
+
 ## [1.0.1] - 2026-05-14
 
 ### Fixed
