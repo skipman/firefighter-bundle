@@ -100,3 +100,9 @@ td.hidelabel.mcwUpdateFields {
   background-image: url(./admin.svg);
   background-size: 1rem;
 }
+
+.ff-resource-department,
+.ff-resource-department + .chzn-container,
+.ff-resource-department + .chosen-container {
+    min-width: 300px;
+}

@@ -46,7 +46,7 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['firefighterDetails'] = [
                 'label' => &$GLOBALS['TL_LANG']['tl_content']['ffname'],
                 'inputType' => 'select',
                 'options_callback' => [FirefighterHelper::class, 'getDepartments'],
-                'eval' => ['style' => 'width:200px', 'includeBlankOption' => true, 'chosen' => true, 'submitOnChange' => true]
+                'eval' => ['style' => 'width:200px', 'includeBlankOption' => true, 'chosen' => true, 'submitOnChange' => true, 'class' => 'ff-resouce-department']
             ],
             'vehicles' => [
                 'label' => &$GLOBALS['TL_LANG']['tl_content']['vehicles'],

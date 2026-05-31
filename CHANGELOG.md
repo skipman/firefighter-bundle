@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.1] - 2026-05-31
+
+### Fixed
+- Fixed department option callbacks so they also work when called from MultiColumnWizard widgets
+- Improved the backend width handling of the department select field in the “FF resources” content element when using Chosen in Contao 5.7
+
 ## [1.1.0] - 2026-05-31
 
 ### Added

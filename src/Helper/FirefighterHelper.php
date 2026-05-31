@@ -26,9 +26,9 @@ use Contao\Input;
 
 class FirefighterHelper
 {
-    public static function getDepartments(DataContainer $dc = null): array
+    public static function getDepartments($dc = null): array
     {
-        return self::getAllowedDepartmentOptions($dc);
+        return self::getDepartmentOptions();
     }
 
     public static function getDepartmentOptions(): array
@@ -43,7 +43,7 @@ class FirefighterHelper
         return $departments;
     }
 
-    public static function getAllowedDepartmentOptions(DataContainer $dc = null): array
+    public static function getAllowedDepartmentOptions($dc = null): array
     {
         $user = BackendUser::getInstance();
 
@@ -53,7 +53,7 @@ class FirefighterHelper
 
         $selected = [];
 
-        if (null !== $dc && null !== $dc->activeRecord && $dc->activeRecord->membersHomebase) {
+        if ($dc instanceof DataContainer && null !== $dc->activeRecord && $dc->activeRecord->membersHomebase) {
             $selected = [(int) $dc->activeRecord->membersHomebase];
         }
 
@@ -81,7 +81,7 @@ class FirefighterHelper
         return $options;
     }
 
-    public static function filterAllowedDepartment($value, DataContainer $dc = null): string
+    public static function filterAllowedDepartment($value, $dc = null): string
     {
         $value = (string) $value;
         $user = BackendUser::getInstance();
@@ -94,7 +94,7 @@ class FirefighterHelper
             return $value;
         }
 
-        if (null !== $dc && null !== $dc->activeRecord) {
+        if ($dc instanceof DataContainer && null !== $dc->activeRecord) {
             return (string) $dc->activeRecord->membersHomebase;
         }
 
@@ -406,10 +406,10 @@ class FirefighterHelper
 
         return $options;
     }
-     /**
-     * @param DataContainer|null $dc
+    /**
+     * @param mixed $dc
      */
-    public static function getAllowedFirefighterCategoryOptions(DataContainer $dc = null): array
+    public static function getAllowedFirefighterCategoryOptions($dc = null): array
     {
         $user = BackendUser::getInstance();
 
@@ -424,7 +424,7 @@ class FirefighterHelper
 
         $selected = [];
 
-        if (null !== $dc && null !== $dc->activeRecord) {
+        if ($dc instanceof DataContainer && null !== $dc->activeRecord) {
             $selected = array_map(
                 'intval',
                 StringUtil::deserialize($dc->activeRecord->firefightercategories, true)
@@ -460,7 +460,7 @@ class FirefighterHelper
         return $options;
     }
 
-    public static function filterAllowedFirefighterCategories($value, DataContainer $dc = null): array
+    public static function filterAllowedFirefighterCategories($value, $dc = null): array
     {
         $user = BackendUser::getInstance();
 
@@ -480,7 +480,7 @@ class FirefighterHelper
 
         $existing = [];
 
-        if (null !== $dc && null !== $dc->activeRecord) {
+        if ($dc instanceof DataContainer && null !== $dc->activeRecord) {
             $existing = array_map(
                 'intval',
                 StringUtil::deserialize($dc->activeRecord->firefightercategories, true)
