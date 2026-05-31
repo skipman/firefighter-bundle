@@ -189,9 +189,13 @@
         <source>Courses</source>
         <target>Kurse</target>
       </trans-unit>
-      <trans-unit id="tl_firefighter.membersCoursesWizard">
+      <trans-unit id="tl_firefighter.membersCoursesWizard.0">
         <source>Courses / Training</source>
         <target>Kurse / Ausbildungen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersCoursesWizard.1">
+        <source>Select courses and training</source>
+        <target>Kurse und Ausbildungen auswählen</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.membersCourse.0">
         <source>Course / Training</source>
@@ -210,9 +214,13 @@
         <source>Achievement badge</source>
         <target>Leistungsabzeichen</target>
       </trans-unit>
-      <trans-unit id="tl_firefighter.membersBadgesWizard">
+      <trans-unit id="tl_firefighter.membersBadgesWizard.0">
         <source>Achievement badge</source>
         <target>Erworbene Leistungsabzeichen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersBadgesWizard.1">
+        <source>Select achievement badges</source>
+        <target>Leistungsabzeichen auswählen</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.membersBadge.0">
         <source>Achievement badge</source>
@@ -235,9 +243,13 @@
         <source>Awards</source>
         <target>Auszeichnungen</target>
       </trans-unit>
-      <trans-unit id="tl_firefighter.membersAwardsWizard">
+      <trans-unit id="tl_firefighter.membersAwardsWizard.0">
         <source>Awards</source>
         <target>Auszeichnungen / Ehrungen</target>
+      </trans-unit>
+      <trans-unit id="tl_firefighter.membersAwardsWizard.1">
+        <source>Select awards</source>
+        <target>Auszeichnungen und Ehrungen auswählen</target>
       </trans-unit>
       <trans-unit id="tl_firefighter.membersAward.0">
         <source>Award</source>

@@ -18,14 +18,6 @@ declare(strict_types=1);
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Skipman\FirefighterBundle\Helper\FirefighterHelper;
 
-// Extend the default palettes
-PaletteManipulator::create()
-    ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
-    ->addField(['firefighter', 'firefighterp'], 'firefighter_legend', PaletteManipulator::POSITION_APPEND)
-    ->applyToPalette('extend', 'tl_user')
-    ->applyToPalette('custom', 'tl_user')
-;
- 
 // Add fields to tl_user
 $GLOBALS['TL_DCA']['tl_user']['fields']['firefighter'] = [
     'exclude' => true,
@@ -34,7 +26,7 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['firefighter'] = [
     'eval' => ['multiple' => true],
     'sql' => 'blob NULL',
 ];
- 
+
 $GLOBALS['TL_DCA']['tl_user']['fields']['firefighterp'] = [
     'exclude' => true,
     'inputType' => 'checkbox',
@@ -43,8 +35,6 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['firefighterp'] = [
     'eval' => ['multiple' => true],
     'sql' => 'blob NULL',
 ];
- 
-$GLOBALS['TL_DCA']['tl_user']['palettes']['extend'] .= ';{firefighter_legend},firefightercategories';
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['firefightercategories'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_user']['firefightercategories'],
@@ -54,3 +44,24 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['firefightercategories'] = [
     'eval' => ['multiple' => true],
     'sql' => 'blob NULL',
 ];
+
+$GLOBALS['TL_DCA']['tl_user']['fields']['firefighterhomebases'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_user']['firefighterhomebases'],
+    'exclude' => true,
+    'inputType' => 'checkboxWizard',
+    'options_callback' => [FirefighterHelper::class, 'getDepartmentOptions'],
+    'eval' => ['multiple' => true],
+    'sql' => 'blob NULL',
+];
+
+// Extend the default palettes
+PaletteManipulator::create()
+    ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
+    ->addField(
+        ['firefighter', 'firefighterp', 'firefightercategories', 'firefighterhomebases'],
+        'firefighter_legend',
+        PaletteManipulator::POSITION_APPEND
+    )
+    ->applyToPalette('extend', 'tl_user')
+    ->applyToPalette('custom', 'tl_user')
+;

@@ -82,3 +82,4 @@ $GLOBALS['TL_HOOKS']['getSearchablePages'][] = [Firefighter::class, 'getSearchab
 $GLOBALS['TL_PERMISSIONS'][] = 'firefighter';
 $GLOBALS['TL_PERMISSIONS'][] = 'firefighterp';
 $GLOBALS['TL_PERMISSIONS'][] = 'firefightercategories';
+$GLOBALS['TL_PERMISSIONS'][] = 'firefighterhomebases';

@@ -21,20 +21,105 @@ use Contao\BackendUser;
 use Contao\DataContainer;
 use Contao\Database;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\Input;
 
 class FirefighterHelper
 {
-    public static function getDepartments(): array
+    public static function getDepartments(DataContainer $dc = null): array
+    {
+        return self::getAllowedDepartmentOptions($dc);
+    }
+
+    public static function getDepartmentOptions(): array
     {
         $departments = [];
         $result = Database::getInstance()->execute("SELECT id, ffname FROM tl_firefighter_departments WHERE type='FF' OR type='BTF' ORDER BY ffname ASC");
 
         while ($result->next()) {
-            $departments[$result->id] = $result->ffname;
+            $departments[(int) $result->id] = $result->ffname;
         }
 
         return $departments;
+    }
+
+    public static function getAllowedDepartmentOptions(DataContainer $dc = null): array
+    {
+        $user = BackendUser::getInstance();
+
+        if ($user->isAdmin) {
+            return self::getDepartmentOptions();
+        }
+
+        $selected = [];
+
+        if (null !== $dc && null !== $dc->activeRecord && $dc->activeRecord->membersHomebase) {
+            $selected = [(int) $dc->activeRecord->membersHomebase];
+        }
+
+        $options = [];
+        $result = Database::getInstance()->execute("SELECT id, ffname FROM tl_firefighter_departments WHERE type='FF' OR type='BTF' ORDER BY ffname ASC");
+
+        while ($result->next()) {
+            $id = (int) $result->id;
+            $isAllowed = self::canAccessHomebase($id, $user);
+            $isSelected = in_array($id, $selected, true);
+
+            if (!$isAllowed && !$isSelected) {
+                continue;
+            }
+
+            $label = $result->ffname;
+
+            if (!$isAllowed && $isSelected) {
+                $label .= ' [übergeordnet vergeben]';
+            }
+
+            $options[$id] = $label;
+        }
+
+        return $options;
+    }
+
+    public static function filterAllowedDepartment($value, DataContainer $dc = null): string
+    {
+        $value = (string) $value;
+        $user = BackendUser::getInstance();
+
+        if ($user->isAdmin || '' === $value) {
+            return $value;
+        }
+
+        if (self::canAccessHomebase((int) $value, $user)) {
+            return $value;
+        }
+
+        if (null !== $dc && null !== $dc->activeRecord) {
+            return (string) $dc->activeRecord->membersHomebase;
+        }
+
+        return '';
+    }
+
+    private static function canAccessHomebase(int $id, BackendUser $user): bool
+    {
+        if ($user->isAdmin) {
+            return true;
+        }
+
+        if (System::getContainer()->has('security.helper')) {
+            try {
+                if (System::getContainer()
+                    ->get('security.helper')
+                    ->isGranted('contao_user.firefighterhomebases', (string) $id)) {
+                    return true;
+                }
+            } catch (\Throwable) {
+                // Fall back to the legacy Contao permission check.
+            }
+        }
+
+        return $user->hasAccess((string) $id, 'firefighterhomebases');
     }
 
     public static function getRankShortOptions(): array

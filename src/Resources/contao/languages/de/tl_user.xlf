@@ -21,6 +21,14 @@
         <source>Firefighter permissions</source>
         <target>FF-Mitglieder-Archivrechte</target>
       </trans-unit>
+      <trans-unit id="tl_user.firefighterhomebases.0">
+        <source>Allowed departments</source>
+        <target>Erlaubte Feuerwehren</target>
+      </trans-unit>
+      <trans-unit id="tl_user.firefighterhomebases.1">
+        <source>Here you can grant access to one or more departments for the homebase field.</source>
+        <target>Hier können Sie festlegen, welche Feuerwehren im Feld "Mitglied bei" ausgewählt werden dürfen.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

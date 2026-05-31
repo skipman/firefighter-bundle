@@ -1,73 +1,89 @@
 # Changelog
 
-Alle wichtigen Änderungen an diesem Projekt werden hier dokumentiert.
+All notable changes to this project are documented here.
 
----
-
-## [1.0.2] - 2026-05-16
-
-### Fixed
-- Entfernung veraltetes Backend-Template Override (`be_main.html5`)
-- Bereinigung nicht benötigter Core-Asset-Einbindungen
-
-## [1.0.1] - 2026-05-14
-
-### Fixed
-- Pflichtfeldlogik für Feuerwehr.Hierarchien korrigiert
-- Pflichtfelder für BFK / AFK / FF und BTF validiert und vereinheitlicht
-- Darstellung der Fahrzeugauswahl im Backend unter Contao 5.7 korrigiert
-- Backend.Asset.Einbindung für Bundle.CSS modernisiert
-
-
-## [1.0.0] - 2026-05-06
+## [1.1.0] - 2026-05-31
 
 ### Added
-- Erstes stabiles Release
-- GPL-konforme Veröffentlichung vorbereitet
-- Lizenzhinweise und Dokumentation überarbeitet
-- Vorbereitung für optionale Support- und Servicefunktionen
+- Added backend permissions for firefighter member categories
+- Added backend permissions for member homebase selection
+- Added WhatsApp as a social media channel for departments
+- Added additional event group options
+
+### Changed
+- Updated sorting for command function listings
 
 ### Fixed
-- Korrekte Sortierung von überörtlichen Kommanden
+- Fixed wizard field labels for courses, badges and awards
+- Improved compatibility with Contao 5.7 while keeping Contao 5.3 support
 
----
+## [1.0.2] . 2026-05-16
 
-## [0.9.3] - 2026-03-21
+### Fixed
+
+- Removed outdated backend template override (`be_main.html5`)
+- Cleaned up obsolete core asset includes
+
+## [1.0.1] . 2026-05-14
+
+### Fixed
+
+- Fixed required field logic for firefighter hierarchy settings
+- Validated and unified required fields for BFK, AFK, FF and BTF
+- Fixed the backend display of the vehicle selection in Contao 5.7
+- Modernized backend asset integration for the bundle CSS
+
+## [1.0.0] . 2026-05-06
 
 ### Added
-- Contao 5.7 Kompatibilität
+
+- First stable release
+- Prepared GPL-compliant publication
+- Revised license notices and documentation
+- Prepared optional support and service features
 
 ### Fixed
-- Entfernte Abhängigkeit von Content-Element
-- MultiColumnWizard Bereinigung
-- Verhalten von Select-Feldern (Chosen)
-- DCA Kompatibilitätsverbesserungen
-- Alias- und Headline-Generierung
-- Rechteverwaltung überarbeitet
 
----
+- Fixed sorting of supra-local command functions
 
-## [0.9.2] - 2025-07-01
+## [0.9.3] . 2026-03-21
 
 ### Added
-- Feld "ua" für Feuerwehren
-- Felder "theme", "responsible" und "participant" für Events
+
+- Added Contao 5.7 compatibility
 
 ### Fixed
-- AFK-Filter gibt ID statt Namen zurück
-- Doppelte Feldnamen im Feuerwehr-Modul
-- Backend-Darstellung der Fahrzeugauswahl verbessert
-- Fehler bei ce_ff-resources unter anderer Domain behoben
 
----
+- Removed dependency on a content element
+- Cleaned up MultiColumnWizard handling
+- Improved select field behavior with Chosen
+- Improved DCA compatibility
+- Improved alias and headline generation
+- Revised permission handling
 
-## [0.9.1] - 2025-05-23
+## [0.9.2] . 2025-07-01
 
 ### Added
-- firefighterCourses
-- firefighterBadges
-- firefighterAwards
+
+- Added the `ua` field for fire departments
+- Added the `theme`, `responsible` and `participant` fields for events
 
 ### Fixed
-- Korrekte Verarbeitung von Delete-Befehlen in MCW-Feldern
-- Korrekte Rechtezuweisung für Mitgliederverwaltung
+
+- Fixed AFK filter returning the ID instead of the name
+- Fixed duplicate field names in the firefighter module
+- Improved backend display of the vehicle selection
+- Fixed an issue with `ce_ff-resources` when used under a different domain
+
+## [0.9.1] . 2025-05-23
+
+### Added
+
+- Added `firefighterCourses`
+- Added `firefighterBadges`
+- Added `firefighterAwards`
+
+### Fixed
+
+- Fixed handling of delete commands in MCW fields
+- Fixed permission assignment for member management

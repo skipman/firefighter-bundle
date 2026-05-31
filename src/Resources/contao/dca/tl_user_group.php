@@ -18,13 +18,6 @@ declare(strict_types=1);
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Skipman\FirefighterBundle\Helper\FirefighterHelper;
 
-// Extend the default palette
-PaletteManipulator::create()
-    ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
-    ->addField(['firefighter', 'firefighterp'], 'firefighter_legend', PaletteManipulator::POSITION_APPEND)
-    ->applyToPalette('default', 'tl_user_group')
-;
- 
 // Add fields to tl_user_group
 $GLOBALS['TL_DCA']['tl_user_group']['fields']['firefighter'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_user']['firefighter'],
@@ -34,7 +27,7 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['firefighter'] = [
     'eval' => ['multiple' => true],
     'sql' => 'blob NULL',
 ];
- 
+
 $GLOBALS['TL_DCA']['tl_user_group']['fields']['firefighterp'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_user']['firefighterp'],
     'exclude' => true,
@@ -44,8 +37,6 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['firefighterp'] = [
     'eval' => ['multiple' => true],
     'sql' => 'blob NULL',
 ];
- 
-$GLOBALS['TL_DCA']['tl_user_group']['palettes']['default'] .= ';{firefighter_legend},firefightercategories';
 
 $GLOBALS['TL_DCA']['tl_user_group']['fields']['firefightercategories'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_user_group']['firefightercategories'],
@@ -55,3 +46,23 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['firefightercategories'] = [
     'eval' => ['multiple' => true],
     'sql' => 'blob NULL',
 ];
+
+$GLOBALS['TL_DCA']['tl_user_group']['fields']['firefighterhomebases'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_user_group']['firefighterhomebases'],
+    'exclude' => true,
+    'inputType' => 'checkboxWizard',
+    'options_callback' => [FirefighterHelper::class, 'getDepartmentOptions'],
+    'eval' => ['multiple' => true],
+    'sql' => 'blob NULL',
+];
+
+// Extend the default palette
+PaletteManipulator::create()
+    ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
+    ->addField(
+        ['firefighter', 'firefighterp', 'firefightercategories', 'firefighterhomebases'],
+        'firefighter_legend',
+        PaletteManipulator::POSITION_APPEND
+    )
+    ->applyToPalette('default', 'tl_user_group')
+;

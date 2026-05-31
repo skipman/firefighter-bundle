@@ -236,13 +236,16 @@ $GLOBALS['TL_DCA']['tl_firefighter'] = [
             'filter' => true,
             'flag' => 11,
             'inputType' => 'select',
-            'options_callback' => [FirefighterHelper::class, 'getDepartments'],
+            'options_callback' => [FirefighterHelper::class, 'getAllowedDepartmentOptions'],
             'eval' => [
                 'maxlength' => 255,
                 'includeBlankOption' => true,
                 'tl_class' => 'w25',
             ],
             'sql' => "varchar(255) NOT NULL default ''",
+            'save_callback' => [
+                [FirefighterHelper::class, 'filterAllowedDepartment'],
+            ],
         ],
         'membersSince' => [
             'label' => &$GLOBALS['TL_LANG']['tl_firefighter']['membersSince'],
