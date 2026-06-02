@@ -49,7 +49,7 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['firefighterhomebases'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_user']['firefighterhomebases'],
     'exclude' => true,
     'inputType' => 'checkboxWizard',
-    'options_callback' => [FirefighterHelper::class, 'getDepartmentOptions'],
+    'options_callback' => [FirefighterHelper::class, 'getDepartmentPermissionOptions'],
     'eval' => ['multiple' => true],
     'sql' => 'blob NULL',
 ];

@@ -43,6 +43,46 @@ class FirefighterHelper
         return $departments;
     }
 
+    public static function getDepartmentPermissionOptions(): array
+    {
+        $departments = [];
+        $result = Database::getInstance()->execute("SELECT id, ffnumber, ffname FROM tl_firefighter_departments WHERE type='FF' OR type='BTF' ORDER BY ffnumber ASC, ffname ASC");
+
+        while ($result->next()) {
+            $ffnumber = trim((string) $result->ffnumber);
+            $ffname = (string) $result->ffname;
+
+            $departments[(int) $result->id] = '' !== $ffnumber ? $ffnumber . ' - ' . $ffname : $ffname;
+        }
+
+        return $departments;
+    }
+
+    public static function getAllowedDepartmentIds(?BackendUser $user = null): array
+    {
+        $user ??= BackendUser::getInstance();
+
+        $ids = [];
+        $result = Database::getInstance()->execute("SELECT id FROM tl_firefighter_departments WHERE type='FF' OR type='BTF' ORDER BY ffnumber ASC, ffname ASC");
+
+        while ($result->next()) {
+            $id = (int) $result->id;
+
+            if ($user->isAdmin || self::canAccessHomebase($id, $user)) {
+                $ids[] = $id;
+            }
+        }
+
+        return $ids;
+    }
+
+    public static function canAccessDepartment(int $id, ?BackendUser $user = null): bool
+    {
+        $user ??= BackendUser::getInstance();
+
+        return self::canAccessHomebase($id, $user);
+    }
+
     public static function getAllowedDepartmentOptions($dc = null): array
     {
         $user = BackendUser::getInstance();

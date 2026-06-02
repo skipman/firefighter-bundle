@@ -2,11 +2,20 @@
 
 All notable changes to this project are documented here.
 
-## [1.1.1] - 2026-05-31
+## [1.2.0] - 2026-06-02
+
+### Added
+- Added permission based access control for fire department master data
+- Users can now only view and edit fire departments assigned through their homebase permissions
+- Added a reusable helper method for resolving allowed fire department IDs
+- Improved fire department permission options by displaying the fire department number and name
+
+### Changed
+- Fire department permission options are now sorted by fire department number and name
+- Restricted users can no longer create, copy or delete fire department records
 
 ### Fixed
-- Fixed department option callbacks so they also work when called from MultiColumnWizard widgets
-- Improved the backend width handling of the department select field in the “FF resources” content element when using Chosen in Contao 5.7
+-Fixed the DCA list filter for restricted fire department access to avoid SQL parameter binding errors
 
 ## [1.1.0] - 2026-05-31
 

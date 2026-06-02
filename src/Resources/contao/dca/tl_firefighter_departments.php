@@ -20,12 +20,20 @@ use Contao\Backend;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
+use Contao\System;
+use Contao\BackendUser;
+use Contao\CoreBundle\Exception\AccessDeniedException;
+use Skipman\FirefighterBundle\Helper\FirefighterHelper;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
     'config' => [
         'dataContainer' => DC_Table::class,        
         'enableVersioning' => true,
         'switchToEdit' => true,
+        'onload_callback' => [
+            ['tl_firefighter_departments', 'checkPermission'],
+        ],
         'sql' => [
             'keys' => [
                 'id' => 'primary'
@@ -35,7 +43,7 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
     'list' => [
         'sorting' => [
             'mode' => 1,
-            'fields' => ['ffname'],
+            'fields' => ['ffnumber', 'ffname'],
             'flag' => 1,
             'length' => 3,
             'panelLayout' => 'filter;sort,search,limit',
@@ -263,6 +271,80 @@ $GLOBALS['TL_DCA']['tl_firefighter_departments'] = [
 
 class tl_firefighter_departments extends Backend
 {
+    public function checkPermission(DataContainer $dc): void
+    {
+        $user = BackendUser::getInstance();
+
+        if ($user->isAdmin) {
+            return;
+        }
+
+        $allowedIds = FirefighterHelper::getAllowedDepartmentIds($user);
+        $this->restrictListToAllowedDepartments($allowedIds);
+
+        $act = (string) Input::get('act');
+        $id = (int) Input::get('id');
+
+        if ('' === $act) {
+            return;
+        }
+
+        switch ($act) {
+            case 'select':
+                return;
+
+            case 'edit':
+            case 'show':
+                if ($id < 1 || !in_array($id, $allowedIds, true)) {
+                    throw new AccessDeniedException('Not enough permissions to access fire department ID ' . $id . '.');
+                }
+
+                return;
+
+            case 'editAll':
+            case 'overrideAll':
+                $this->restrictCurrentIdsToAllowedDepartments($allowedIds);
+
+                return;
+
+            case 'create':
+            case 'copy':
+            case 'delete':
+            case 'copyAll':
+            case 'deleteAll':
+                throw new AccessDeniedException('Not enough permissions to ' . $act . ' fire departments.');
+        }
+
+        if ($id > 0 && !in_array($id, $allowedIds, true)) {
+            throw new AccessDeniedException('Not enough permissions to access fire department ID ' . $id . '.');
+        }
+    }
+
+    private function restrictListToAllowedDepartments(array $allowedIds): void
+    {
+        $allowedIds = array_values(array_filter(array_map('intval', $allowedIds)));
+
+        if ([] === $allowedIds) {
+            $GLOBALS['TL_DCA']['tl_firefighter_departments']['list']['sorting']['filter'][] = 'id=0';
+
+            return;
+        }
+
+        $GLOBALS['TL_DCA']['tl_firefighter_departments']['list']['sorting']['filter'][] = 'id IN(' . implode(',', $allowedIds) . ')';
+    }
+
+    private function restrictCurrentIdsToAllowedDepartments(array $allowedIds): void
+    {
+        /** @var SessionInterface $session */
+       $session = System::getContainer()->get('request_stack')->getSession();
+        $data = $session->all();
+
+        $currentIds = array_map('intval', (array) ($data['CURRENT']['IDS'] ?? []));
+        $data['CURRENT']['IDS'] = array_values(array_intersect($currentIds, $allowedIds));
+
+        $session->replace($data);
+    }
+
     public function getVehicles()
     {
         $vehicles = [];
