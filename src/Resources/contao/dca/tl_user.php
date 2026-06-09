@@ -54,14 +54,18 @@ $GLOBALS['TL_DCA']['tl_user']['fields']['firefighterhomebases'] = [
     'sql' => 'blob NULL',
 ];
 
-// Extend the default palettes
-PaletteManipulator::create()
-    ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
-    ->addField(
-        ['firefighter', 'firefighterp', 'firefightercategories', 'firefighterhomebases'],
-        'firefighter_legend',
-        PaletteManipulator::POSITION_APPEND
-    )
-    ->applyToPalette('extend', 'tl_user')
-    ->applyToPalette('custom', 'tl_user')
-;
+// Extend the palettes that can contain permission settings.
+// Remove the fields first so they cannot appear twice if another DCA pass already added them.
+$firefighterPermissionFields = ['firefighter', 'firefighterp', 'firefighterhomebases', 'firefightercategories'];
+
+foreach (['default', 'extend', 'custom'] as $palette) {
+    if (!isset($GLOBALS['TL_DCA']['tl_user']['palettes'][$palette])) {
+        continue;
+    }
+ 
+    PaletteManipulator::create()
+        ->addLegend('firefighter_legend', 'account_legend', PaletteManipulator::POSITION_BEFORE)
+        ->addField($firefighterPermissionFields, 'firefighter_legend', PaletteManipulator::POSITION_APPEND)
+        ->applyToPalette($palette, 'tl_user')
+    ;
+}

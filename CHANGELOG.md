@@ -2,6 +2,29 @@
 
 All notable changes to this project are documented here.
 
+## [1.3.0] - 2026-06-09
+
+### Added
+
+- Authorized backend users can now create and manage firefighter member groups for their assigned departments.
+- Member group permissions are now primarily based on the assigned department (departmentId) and the user's allowed homebases (firefighterhomebases).
+- Newly created member groups are automatically available to authorized users if the group belongs to one of their allowed departments.
+
+### Changed
+
+- The scopeLevel of member groups is now derived automatically from the department type.
+- The department selection for member groups is restricted to the departments the current backend user is allowed to access.
+- Member group labels now include the department name and group title for clearer identification in backend lists and permission settings.
+- Member group aliases are generated from the department name and group title to keep them unique and readable.
+- Alias generation has been improved to transliterate German umlauts to ae, oe, ue, and ss.
+
+### Fixed
+
+- Fixed permission checks when creating new member group records.
+- Fixed incorrect or missing member group labels after removing simplifiedTitle.
+- Fixed outdated DCA palette references to the removed simplifiedTitle field.
+- Fixed inconsistent scopeLevel values when saving member groups for AFK, BFK, FF, or BTF departments.
+
 ## [1.2.0] - 2026-06-02
 
 ### Added

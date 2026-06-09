@@ -93,10 +93,10 @@ class ModuleFirefighterList extends ModuleFirefighter
                 // Hole die Kategorien in einem Array mit ID als Schlüssel
                 $categoriesById = [];
                 while ($objCategories->next()) {
-                    if ($objCategories->alias !== null && $objCategories->simplifiedTitle !== null) {
+                    if ($objCategories->alias !== null && $objCategories->title !== null) {
                         $categoriesById[$objCategories->id] = [
                             'alias' => $objCategories->alias,
-                            'title' => $objCategories->simplifiedTitle,
+                            'title' => $objCategories->title,
                         ];
                     }
                 }

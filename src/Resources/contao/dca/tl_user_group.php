@@ -56,13 +56,11 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['firefighterhomebases'] = [
     'sql' => 'blob NULL',
 ];
 
-// Extend the default palette
+// Remove the fields first so they cannot appear twice if another DCA pass already added them.
+$firefighterPermissionFields = ['firefighter', 'firefighterp', 'firefighterhomebases', 'firefightercategories'];
+ 
 PaletteManipulator::create()
-    ->addLegend('firefighter_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
-    ->addField(
-        ['firefighter', 'firefighterp', 'firefightercategories', 'firefighterhomebases'],
-        'firefighter_legend',
-        PaletteManipulator::POSITION_APPEND
-    )
+    ->addLegend('firefighter_legend', 'title_legend', PaletteManipulator::POSITION_AFTER)
+    ->addField($firefighterPermissionFields, 'firefighter_legend', PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('default', 'tl_user_group')
 ;

@@ -13,6 +13,14 @@
         <source>Here you can grant access to one or more departments for the homebase field.</source>
         <target>Hier können Sie festlegen, welche Feuerwehren im Feld "Mitglied bei" ausgewählt werden dürfen.</target>
       </trans-unit>
+      <trans-unit id="tl_user_group.firefightercategories.0">
+        <source>Allowed firefighter member groups</source>
+        <target>Erlaubte Mitgliedergruppen</target>
+      </trans-unit>
+      <trans-unit id="tl_user_group.firefightercategories.1">
+        <source>Here you can grant access to one or more firefighter member groups.</source>
+        <target>Hier können Sie den Zugriff auf eine oder mehrere Mitgliedergruppen erlauben.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
